@@ -1,0 +1,115 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  phone         String?
+  accounts      Account[]
+  sessions      Session[]
+  centros       Centro[]
+  bitacora      BitacoraEntry[]
+  suscripciones PushSubscription[]
+  createdAt     DateTime  @default(now())
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Centro {
+  id          String   @id @default(cuid())
+  userId      String
+  nombre      String
+  latitud     Float
+  longitud    Float
+  comuna      String
+  especie     String   @default("MEJILLON")
+  activo      Boolean  @default(true)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bitacora    BitacoraEntry[]
+  alertas     AlertaCentro[]
+  createdAt   DateTime @default(now())
+}
+
+model BitacoraEntry {
+  id          String   @id @default(cuid())
+  userId      String
+  centroId    String
+  fecha       DateTime
+  cosecha_kg  Float?
+  toxicidad   String?
+  notas       String?
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  centro      Centro   @relation(fields: [centroId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+}
+
+model Alerta {
+  id          String   @id @default(cuid())
+  zona        String
+  nivel       String
+  mensaje     String
+  fuente      String
+  activa      Boolean  @default(true)
+  centros     AlertaCentro[]
+  createdAt   DateTime @default(now())
+  expiresAt   DateTime?
+}
+
+model AlertaCentro {
+  alertaId  String
+  centroId  String
+  alerta    Alerta @relation(fields: [alertaId], references: [id])
+  centro    Centro @relation(fields: [centroId], references: [id])
+  @@id([alertaId, centroId])
+}
+
+model PushSubscription {
+  id        String   @id @default(cuid())
+  userId    String
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model FanDataCache {
+  id          String   @id @default(cuid())
+  fuente      String
+  zona        String
+  datos       Json
+  fetchedAt   DateTime @default(now())
+  validUntil  DateTime
+}
