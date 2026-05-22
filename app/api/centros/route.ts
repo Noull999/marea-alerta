@@ -39,7 +39,7 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { nombre, latitud, longitud } = body
+    const { nombre, latitud, longitud, comuna } = body
 
     if (!nombre || latitud === undefined || longitud === undefined) {
       return NextResponse.json(
@@ -53,6 +53,7 @@ export async function POST(request: NextRequest) {
         nombre,
         latitud,
         longitud,
+        comuna: comuna || 'N/A',
         userId: session.user.id,
       },
     })

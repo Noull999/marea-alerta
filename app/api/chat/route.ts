@@ -58,7 +58,7 @@ El usuario tiene acceso a:
       temperature: 0.7,
     })
 
-    return (await result).toDataStreamResponse()
+    return (await result).toTextStreamResponse()
   } catch (error) {
     console.error('Chat error:', error)
     return new Response('Error processing chat request', { status: 500 })

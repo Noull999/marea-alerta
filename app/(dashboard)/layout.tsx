@@ -1,5 +1,6 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
+import { Route } from 'next'
 import { signOut } from '@/lib/auth'
 import { MapPin, AlertTriangle, BookOpen, MessageSquare, LogOut, Settings } from 'lucide-react'
 
@@ -38,35 +39,35 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
           <nav className="lg:col-span-1">
             <div className="sticky top-24 space-y-2">
               <Link
-                href="/dashboard"
+                href={"/dashboard" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
               >
                 <MapPin className="h-5 w-5" />
                 <span className="text-sm font-medium">Inicio</span>
               </Link>
               <Link
-                href="/dashboard/alertas"
+                href={"/dashboard/alertas" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
               >
                 <AlertTriangle className="h-5 w-5" />
                 <span className="text-sm font-medium">Alertas</span>
               </Link>
               <Link
-                href="/dashboard/centros"
+                href={"/dashboard/centros" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
               >
                 <MapPin className="h-5 w-5" />
                 <span className="text-sm font-medium">Mis Centros</span>
               </Link>
               <Link
-                href="/dashboard/bitacora"
+                href={"/dashboard/bitacora" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
               >
                 <BookOpen className="h-5 w-5" />
                 <span className="text-sm font-medium">Bitácora</span>
               </Link>
               <Link
-                href="/dashboard/asistente"
+                href={"/dashboard/asistente" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
               >
                 <MessageSquare className="h-5 w-5" />
@@ -74,7 +75,7 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
               </Link>
               <div className="border-t border-gray-200 my-2 pt-2">
                 <Link
-                  href="/dashboard/configuracion"
+                  href={"/dashboard/configuracion" as Route}
                   className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
                 >
                   <Settings className="h-5 w-5" />

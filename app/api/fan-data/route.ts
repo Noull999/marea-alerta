@@ -34,11 +34,11 @@ export async function GET() {
             id: `${zona.nombre}-open-meteo`,
             fuente: 'open-meteo',
             zona: zona.nombre,
-            datos: datos as unknown as Record<string, unknown>,
+            datos: datos as any,
             validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
           },
           update: {
-            datos: datos as unknown as Record<string, unknown>,
+            datos: datos as any,
             fetchedAt: new Date(),
             validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
           },

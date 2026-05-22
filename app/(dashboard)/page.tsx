@@ -76,7 +76,7 @@ export default async function DashboardPage() {
             id: a.id,
             zona: a.zona,
             nivel: a.nivel as any,
-            descripcion: a.descripcion,
+            descripcion: a.mensaje,
             createdAt: a.createdAt.toISOString(),
           }))}
         />

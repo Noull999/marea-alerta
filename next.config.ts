@@ -24,7 +24,7 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig: NextConfig = {
-  typedRoutes: true,
+  typedRoutes: false,
   turbopack: {},
   // Asegurar que los assets estáticos se cacheen correctamente
   headers: async () => {

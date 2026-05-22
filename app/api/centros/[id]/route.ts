@@ -4,16 +4,17 @@ import { db } from '@/lib/db'
 
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const centro = await db.centro.findFirst({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
     })
 
     if (!centro) {
@@ -31,7 +32,7 @@ export async function PUT(
     }
 
     const updated = await db.centro.update({
-      where: { id: params.id },
+      where: { id },
       data: { nombre, latitud, longitud },
     })
 
@@ -52,23 +53,24 @@ export async function PUT(
 
 export async function DELETE(
   _request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const session = await auth()
     if (!session?.user?.id) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const centro = await db.centro.findFirst({
-      where: { id: params.id, userId: session.user.id },
+      where: { id, userId: session.user.id },
     })
 
     if (!centro) {
       return NextResponse.json({ error: 'Centro not found' }, { status: 404 })
     }
 
-    await db.centro.delete({ where: { id: params.id } })
+    await db.centro.delete({ where: { id } })
 
     return NextResponse.json({ success: true })
   } catch (error) {

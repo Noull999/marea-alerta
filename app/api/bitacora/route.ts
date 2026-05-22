@@ -18,9 +18,10 @@ export async function GET() {
       entries: entries.map((e) => ({
         id: e.id,
         fecha: e.fecha.toISOString(),
-        observacion: e.observacion,
-        riesgo: e.riesgo,
-        recomendacion: e.recomendacion,
+        centroId: e.centroId,
+        cosecha_kg: e.cosecha_kg,
+        toxicidad: e.toxicidad,
+        notas: e.notas,
       })),
     })
   } catch (error) {
@@ -40,9 +41,9 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { fecha, observacion, riesgo, recomendacion } = body
+    const { fecha, centroId, cosecha_kg, toxicidad, notas } = body
 
-    if (!fecha || !observacion || !riesgo || !recomendacion) {
+    if (!fecha || !centroId) {
       return NextResponse.json(
         { error: 'Missing required fields' },
         { status: 400 }
@@ -52,9 +53,10 @@ export async function POST(request: NextRequest) {
     const entry = await db.bitacoraEntry.create({
       data: {
         fecha: new Date(fecha),
-        observacion,
-        riesgo,
-        recomendacion,
+        centroId,
+        cosecha_kg: cosecha_kg ?? null,
+        toxicidad: toxicidad ?? null,
+        notas: notas ?? null,
         userId: session.user.id,
       },
     })
@@ -63,9 +65,10 @@ export async function POST(request: NextRequest) {
       {
         id: entry.id,
         fecha: entry.fecha.toISOString(),
-        observacion: entry.observacion,
-        riesgo: entry.riesgo,
-        recomendacion: entry.recomendacion,
+        centroId: entry.centroId,
+        cosecha_kg: entry.cosecha_kg,
+        toxicidad: entry.toxicidad,
+        notas: entry.notas,
       },
       { status: 201 }
     )

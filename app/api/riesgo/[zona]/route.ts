@@ -6,9 +6,10 @@ import { db } from '@/lib/db'
 
 export async function GET(
   _req: Request,
-  { params }: { params: { zona: string } }
+  { params }: { params: Promise<{ zona: string }> }
 ) {
-  const zona = decodeURIComponent(params.zona)
+  const { zona: zonaParam } = await params
+  const zona = decodeURIComponent(zonaParam)
 
   try {
     const [vedas, fanHistorico, cacheEntry] = await Promise.all([
