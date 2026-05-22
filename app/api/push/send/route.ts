@@ -2,13 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import webpush from 'web-push'
 
-// Configurar VAPID keys
-webpush.setVapidDetails(
-  'mailto:alertas@mareaalerta.cl',
-  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '',
-  process.env.VAPID_PRIVATE_KEY || ''
-)
-
 interface PushPayload {
   title: string
   body: string
@@ -19,6 +12,15 @@ interface PushPayload {
 
 export async function POST(request: NextRequest) {
   try {
+    // Configurar VAPID keys si están definidas
+    if (process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY && process.env.VAPID_PRIVATE_KEY) {
+      webpush.setVapidDetails(
+        'mailto:alertas@mareaalerta.cl',
+        process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,
+        process.env.VAPID_PRIVATE_KEY
+      )
+    }
+
     // Verificar que sea una solicitud autorizada (desde el servidor interno)
     const authHeader = request.headers.get('authorization')
     if (authHeader !== `Bearer ${process.env.INTERNAL_API_KEY}`) {
