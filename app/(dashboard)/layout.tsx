@@ -1,10 +1,17 @@
 import { ReactNode } from 'react'
 import Link from 'next/link'
 import { Route } from 'next'
+import { auth } from '@/lib/auth'
 import { signOut } from '@/lib/auth'
+import { redirect } from 'next/navigation'
 import { MapPin, AlertTriangle, BookOpen, MessageSquare, LogOut, Settings } from 'lucide-react'
 
 async function DashboardLayout({ children }: { children: ReactNode }) {
+  const session = await auth()
+  if (!session?.user) {
+    redirect('/login')
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
