@@ -14,10 +14,16 @@ export default async function DashboardPage() {
       .catch(() => ({ zonas: [] })),
     db.centro.findMany({
       where: { userId: session.user.id },
+    }).catch((err) => {
+      console.error('Error fetching centros:', err)
+      return []
     }),
     db.alerta.findMany({
       orderBy: { createdAt: 'desc' },
       take: 5,
+    }).catch((err) => {
+      console.error('Error fetching alertas:', err)
+      return []
     }),
   ])
 

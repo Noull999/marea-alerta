@@ -7,9 +7,14 @@ export default async function AlertasPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
-  const alertas = await db.alerta.findMany({
-    orderBy: { createdAt: 'desc' },
-  })
+  let alertas = []
+  try {
+    alertas = await db.alerta.findMany({
+      orderBy: { createdAt: 'desc' },
+    })
+  } catch (err) {
+    console.error('Error fetching alertas:', err)
+  }
 
   return (
     <div className="space-y-6">
