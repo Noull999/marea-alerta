@@ -7,7 +7,7 @@ export default async function AlertasPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
-  let alertas = []
+  let alertas: Awaited<ReturnType<typeof db.alerta.findMany>> = []
   try {
     alertas = await db.alerta.findMany({
       orderBy: { createdAt: 'desc' },
