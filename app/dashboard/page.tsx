@@ -87,15 +87,21 @@ export default async function DashboardPage() {
         <div className="lg:col-span-2">
           <div className="bg-white rounded-lg border border-gray-200 p-6">
             <h2 className="text-lg font-semibold text-gray-900 mb-4">Mapa de Riesgo</h2>
-            <RiskMap
-              zonas={zonas.zonas || []}
-              centrosUsuario={centrosUsuario.map((c) => ({
-                id: c.id,
-                nombre: c.nombre,
-                latitud: c.latitud,
-                longitud: c.longitud,
-              }))}
-            />
+            {zonas?.zonas ? (
+              <RiskMap
+                zonas={Array.isArray(zonas.zonas) ? zonas.zonas : []}
+                centrosUsuario={centrosUsuario.map((c) => ({
+                  id: c.id,
+                  nombre: c.nombre,
+                  latitud: c.latitud,
+                  longitud: c.longitud,
+                }))}
+              />
+            ) : (
+              <div className="h-96 md:h-[500px] bg-gray-100 rounded-lg flex items-center justify-center">
+                <p className="text-gray-500">Cargando datos de zonas...</p>
+              </div>
+            )}
           </div>
         </div>
       </div>

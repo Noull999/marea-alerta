@@ -102,9 +102,9 @@ export function ChatAsistente() {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg border border-gray-200">
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 flex flex-col">
+    <div className="flex flex-col h-full w-full bg-white rounded-lg overflow-hidden">
+      {/* Messages Area */}
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -113,10 +113,10 @@ export function ChatAsistente() {
             }`}
           >
             <div
-              className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-2 rounded-lg ${
+              className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-lg break-words ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none'
-                  : 'bg-gray-100 text-gray-900 rounded-bl-none'
+                  ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
+                  : 'bg-white text-gray-900 rounded-bl-none shadow-sm border border-gray-200'
               }`}
             >
               <p className="text-sm leading-relaxed whitespace-pre-wrap">
@@ -126,23 +126,22 @@ export function ChatAsistente() {
           </div>
         ))}
 
-        {/* Quick Prompts - mostrar solo si hay mensaje inicial */}
+        {/* Quick Prompts */}
         {messages.length === 1 && !loading && (
-          <div className="mt-auto pt-4 space-y-2">
-            <p className="text-xs text-gray-500 font-medium">Preguntas frecuentes:</p>
+          <div className="space-y-2 mt-6">
+            <p className="text-xs text-gray-500 font-medium px-2">Preguntas frecuentes:</p>
             <div className="grid grid-cols-1 gap-2">
               {QUICK_PROMPTS.map((prompt) => (
                 <button
                   key={prompt}
                   onClick={() => {
                     setInput(prompt)
-                    // Auto-submit después de un pequeño delay
                     setTimeout(() => {
                       const form = document.querySelector('form') as HTMLFormElement
                       form?.dispatchEvent(new Event('submit', { bubbles: true }))
                     }, 100)
                   }}
-                  className="text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 transition"
+                  className="text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 transition active:bg-blue-200"
                 >
                   {prompt}
                 </button>
@@ -151,18 +150,19 @@ export function ChatAsistente() {
           </div>
         )}
 
+        {/* Loading Indicator */}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-gray-100 text-gray-900 px-4 py-2 rounded-lg rounded-bl-none">
-              <Loader2 className="h-4 w-4 animate-spin" />
+            <div className="bg-white text-gray-900 px-4 py-3 rounded-lg rounded-bl-none shadow-sm border border-gray-200">
+              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <div className="border-t border-gray-200 p-4">
+      {/* Input Area */}
+      <div className="border-t border-gray-200 bg-white p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -170,12 +170,12 @@ export function ChatAsistente() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu pregunta..."
             disabled={loading}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100"
+            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="bg-blue-600 text-white p-2 rounded-lg hover:bg-blue-700 disabled:bg-gray-400 transition"
+            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center min-w-[40px]"
             title="Enviar"
           >
             <Send className="h-4 w-4" />
