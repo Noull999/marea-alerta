@@ -59,7 +59,22 @@ export function ChatAsistente() {
         }),
       })
 
-      if (!response.ok) throw new Error('Error en la respuesta')
+      if (response.status === 503) {
+        const errorData = await response.json().catch(() => ({}))
+        const errorContent = errorData.message || 'El asistente no está disponible en este momento.'
+        const errorMessage: Message = {
+          id: (Date.now() + 1).toString(),
+          role: 'assistant',
+          content: `⚠️ ${errorContent}`,
+        }
+        setMessages((prev) => [...prev, errorMessage])
+        setLoading(false)
+        return
+      }
+
+      if (!response.ok) {
+        throw new Error(`Error HTTP ${response.status}`)
+      }
 
       const reader = response.body?.getReader()
       const decoder = new TextDecoder()
@@ -93,7 +108,7 @@ export function ChatAsistente() {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
         content:
-          'Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo.',
+          '❌ Error procesando tu mensaje. Por favor, verifica tu conexión e intenta de nuevo.',
       }
       setMessages((prev) => [...prev, errorMessage])
     } finally {

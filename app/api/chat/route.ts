@@ -2,16 +2,7 @@ import { streamText } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { auth } from '@/lib/auth'
 
-export async function POST(req: Request) {
-  try {
-    const session = await auth()
-    if (!session?.user?.id) {
-      return new Response('Unauthorized', { status: 401 })
-    }
-
-    const { messages } = await req.json()
-
-    const systemPrompt = `Eres MareaAlerta Assistant, un experto en acuicultura y alertas de marea roja (Floraciones Algales Nocivas - FAN) en Los Lagos, Chile.
+const systemPrompt = `Eres MareaAlerta Assistant, un experto en acuicultura y alertas de marea roja (Floraciones Algales Nocivas - FAN) en Los Lagos, Chile.
 
 Tu rol es ayudar a cultores de moluscos a:
 1. Entender el riesgo de marea roja (FAN) en sus zonas de cultivo
@@ -34,19 +25,28 @@ TU TONO:
 PAUTAS:
 - Responde siempre en español
 - Proporciona recomendaciones específicas cuando sea posible
-- Si falta información crítica, sugiere acciones: "Revisa el mapa en /dashboard" o "Contacta a SERNAPESCA: teléfono/email"
-- Para preguntas sobre regulaciones actuales, recomienda verificar datos.gob.cl
+- Si falta información crítica, sugiere acciones
 - En situaciones de alto riesgo, enfatiza contactar autoridades
-- Valida que entiendas ubicación/zona del usuario cuando sea relevante
+- Valida que entiendas ubicación/zona del usuario cuando sea relevante`
 
-CONTEXTO DISPONIBLE:
-El usuario tiene acceso a:
-- Mapa de riesgo en tiempo real
-- Historial de eventos FAN en su región
-- Datos de oleaje y temperatura
-- Alertas activas de SERNAPESCA
-- Registro de observaciones (bitácora)
-- IA para análisis de tendencias`
+export async function POST(req: Request) {
+  try {
+    const session = await auth()
+    if (!session?.user?.id) {
+      return new Response('Unauthorized', { status: 401 })
+    }
+
+    const { messages } = await req.json()
+
+    if (!process.env.ANTHROPIC_API_KEY) {
+      return new Response(
+        JSON.stringify({
+          error: 'Asistente no configurado',
+          message: 'La API de IA no está configurada. Por favor, contacta al administrador.',
+        }),
+        { status: 503, headers: { 'Content-Type': 'application/json' } }
+      )
+    }
 
     const result = streamText({
       model: anthropic('claude-3-5-sonnet-20241022'),
@@ -61,6 +61,15 @@ El usuario tiene acceso a:
     return (await result).toTextStreamResponse()
   } catch (error) {
     console.error('Chat error:', error)
-    return new Response('Error processing chat request', { status: 500 })
+    const errorMessage = error instanceof Error ? error.message : 'Error desconocido'
+
+    if (errorMessage.includes('401') || errorMessage.includes('authentication')) {
+      return new Response(
+        'Error de autenticación con el servicio de IA. Verifica que ANTHROPIC_API_KEY esté configurado.',
+        { status: 503 }
+      )
+    }
+
+    return new Response('Error procesando tu pregunta. Intenta de nuevo.', { status: 500 })
   }
 }
