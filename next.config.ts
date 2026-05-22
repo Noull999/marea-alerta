@@ -4,8 +4,8 @@ const withPWA = require('next-pwa')({
   dest: 'public',
   register: true,
   skipWaiting: true,
-  // En desarrollo, deshabilitar PWA para evitar problemas con hot reload
-  disable: process.env.NODE_ENV === 'development',
+  // Deshabilitar PWA en Vercel (producción) por conflicto con Turbopack
+  disable: process.env.NODE_ENV === 'production' || process.env.VERCEL === '1',
   // Archivos a incluir en el cache
   publicExcludes: ['!robots.txt', '!sitemap.xml'],
   // Configuración de runtime caching
@@ -24,9 +24,8 @@ const withPWA = require('next-pwa')({
 })
 
 const nextConfig: NextConfig = {
-  experimental: { typedRoutes: true },
-  // Optimizaciones para PWA
-  swcMinify: true,
+  typedRoutes: true,
+  turbopack: {},
   // Asegurar que los assets estáticos se cacheen correctamente
   headers: async () => {
     return [
