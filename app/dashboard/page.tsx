@@ -8,15 +8,25 @@ export default async function DashboardPage() {
   const session = await auth()
   if (!session?.user?.id) redirect('/login')
 
-  let centrosUsuario = []
-  let alertas = []
-  let zonas = { zonas: [] }
+  let centrosUsuario: Awaited<ReturnType<typeof db.centro.findMany>> = []
+  let alertas: Awaited<ReturnType<typeof db.alerta.findMany>> = []
+  let zonas: any = { zonas: [] }
 
   try {
+    const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
     const results = await Promise.all([
-      fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/fan-data`)
-        .then((r) => r.json())
-        .catch(() => ({ zonas: [] })),
+      fetch(`${baseUrl}/api/fan-data`)
+        .then((r) => {
+          if (!r.ok) {
+            console.warn(`fan-data request failed: ${r.status}`)
+            return { zonas: [] }
+          }
+          return r.json()
+        })
+        .catch((err) => {
+          console.error('Error fetching fan-data:', err)
+          return { zonas: [] }
+        }),
       db.centro.findMany({
         where: { userId: session.user.id },
       }).catch((err: any) => {
@@ -34,6 +44,11 @@ export default async function DashboardPage() {
     zonas = results[0]
     centrosUsuario = results[1]
     alertas = results[2]
+    console.log('Dashboard data loaded:', {
+      zonas: zonas?.zonas?.length || 0,
+      centros: centrosUsuario.length,
+      alertas: alertas.length,
+    })
   } catch (error) {
     console.error('Error loading dashboard data:', error)
   }

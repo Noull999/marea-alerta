@@ -10,47 +10,99 @@ const ZONAS_REFERENCIA = [
   { nombre: 'Hualaihué', lat: -42.0, lon: -72.6 },
 ]
 
+interface ZonaRiesgo {
+  nombre: string
+  lat: number
+  lon: number
+  nivel: 'VERDE' | 'AMARILLO' | 'ROJO'
+  recomendacion: string
+}
+
+function calcularNivelRiesgo(waveHeight: number): ZonaRiesgo['nivel'] {
+  if (waveHeight < 0.5) return 'AMARILLO'
+  if (waveHeight < 1.5) return 'VERDE'
+  return 'VERDE'
+}
+
+function getRecomendacion(nivel: ZonaRiesgo['nivel']): string {
+  const recomendaciones: Record<string, string> = {
+    ROJO: 'Alto riesgo: evalúe cosechar de inmediato o espere confirmación oficial.',
+    AMARILLO: 'Riesgo moderado: monitoree diariamente y esté listo para cosechar si el riesgo aumenta.',
+    VERDE: 'Condiciones normales. Continúe operación habitual.',
+  }
+  return recomendaciones[nivel] || 'Sin información disponible'
+}
+
 export async function GET() {
-  const resultados = await Promise.all(
-    ZONAS_REFERENCIA.map(async (zona) => {
-      try {
-        // Verificar cache en DB (válido por 6h)
-        const cached = await db.fanDataCache.findFirst({
-          where: {
-            zona: zona.nombre,
-            fuente: 'open-meteo',
-            validUntil: { gt: new Date() },
-          },
-        })
-        if (cached) return { zona: zona.nombre, datos: cached.datos }
+  try {
+    const resultados = await Promise.all(
+      ZONAS_REFERENCIA.map(async (zona): Promise<ZonaRiesgo> => {
+        try {
+          let marineData = null
 
-        // Fetch fresco
-        const datos = await fetchMarineData(zona.lat, zona.lon)
+          // Verificar cache en DB (válido por 6h)
+          const cached = await db.fanDataCache.findFirst({
+            where: {
+              zona: zona.nombre,
+              fuente: 'open-meteo',
+              validUntil: { gt: new Date() },
+            },
+          })
 
-        // Guardar en cache
-        await db.fanDataCache.upsert({
-          where: { id: `${zona.nombre}-open-meteo` },
-          create: {
-            id: `${zona.nombre}-open-meteo`,
-            fuente: 'open-meteo',
-            zona: zona.nombre,
-            datos: datos as any,
-            validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
-          },
-          update: {
-            datos: datos as any,
-            fetchedAt: new Date(),
-            validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
-          },
-        })
+          if (cached) {
+            marineData = cached.datos
+          } else {
+            // Fetch fresco
+            marineData = await fetchMarineData(zona.lat, zona.lon)
 
-        return { zona: zona.nombre, datos }
-      } catch (error) {
-        console.error(`Error fetching ${zona.nombre}:`, error)
-        return { zona: zona.nombre, datos: null, error: 'Fetch failed' }
-      }
-    })
-  )
+            // Guardar en cache
+            await db.fanDataCache.upsert({
+              where: { id: `${zona.nombre}-open-meteo` },
+              create: {
+                id: `${zona.nombre}-open-meteo`,
+                fuente: 'open-meteo',
+                zona: zona.nombre,
+                datos: marineData as any,
+                validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
+              },
+              update: {
+                datos: marineData as any,
+                fetchedAt: new Date(),
+                validUntil: new Date(Date.now() + 6 * 60 * 60 * 1000),
+              },
+            })
+          }
 
-  return NextResponse.json({ zonas: resultados, timestamp: new Date().toISOString() })
+          const waveHeights = (marineData as any)?.waveHeight || []
+          const latestWaveHeight = waveHeights[waveHeights.length - 1] || 1.0
+          const nivel = calcularNivelRiesgo(latestWaveHeight)
+
+          return {
+            nombre: zona.nombre,
+            lat: zona.lat,
+            lon: zona.lon,
+            nivel,
+            recomendacion: getRecomendacion(nivel),
+          }
+        } catch (error) {
+          console.error(`Error processing ${zona.nombre}:`, error)
+          return {
+            nombre: zona.nombre,
+            lat: zona.lat,
+            lon: zona.lon,
+            nivel: 'VERDE',
+            recomendacion: 'Datos no disponibles en este momento',
+          }
+        }
+      })
+    )
+
+    return NextResponse.json({ zonas: resultados, timestamp: new Date().toISOString() })
+  } catch (error) {
+    console.error('Error in fan-data endpoint:', error)
+    return NextResponse.json(
+      { zonas: [], error: 'Error fetching data' },
+      { status: 500 }
+    )
+  }
 }
