@@ -3,6 +3,7 @@ import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { RiskMap } from '@/components/mapa/RiskMap'
 import { AlertList } from '@/components/alertas/AlertList'
+import { RecommendationCard } from '@/components/recomendaciones/RecommendationCard'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -105,6 +106,37 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Recomendaciones para tus Centros */}
+      {centrosUsuario.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Recomendaciones para tus Centros
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {centrosUsuario.map((centro) => {
+              const zonaData = (zonas?.zonas || []).find(
+                (z: any) =>
+                  z.nombre.toLowerCase().includes(centro.nombre.toLowerCase()) ||
+                  (Math.abs(z.lat - centro.latitud) < 0.5 &&
+                    Math.abs(z.lon - centro.longitud) < 0.5)
+              )
+
+              return (
+                <RecommendationCard
+                  key={centro.id}
+                  zona={centro.nombre}
+                  nivel={zonaData?.nivel || 'VERDE'}
+                  recomendacion={
+                    zonaData?.recomendacion ||
+                    'Monitorea constantemente las condiciones oceanográficas.'
+                  }
+                />
+              )
+            })}
+          </div>
+        </div>
+      )}
 
       {/* Recent Alerts */}
       <div className="bg-white rounded-lg border border-gray-200 p-6">
