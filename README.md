@@ -1,36 +1,61 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌊 MareaAlerta
 
-## Getting Started
+Aplicación web progresiva (PWA) para monitoreo en tiempo real de riesgo de marea roja en Los Lagos, Chile.
 
-First, run the development server:
+## Características Principales
+
+✨ **Monitoreo de Riesgo en Tiempo Real**
+- Mapa interactivo con niveles de riesgo (Verde/Amarillo/Rojo)
+- Datos oceanográficos en tiempo real
+- Historial de eventos FAN
+- Vedas sanitarias de SERNAPESCA
+
+🔔 **Notificaciones Push**
+- Alertas inmediatas
+- Compatible con todos los navegadores
+- Funciona offline
+
+🤖 **Asistente IA**
+- Recomendaciones personalizadas
+- Análisis de tendencias
+- Asesoría sobre decisiones
+
+## Stack Tecnológico
+
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS, Leaflet
+- **Backend**: Node.js, Prisma v6, PostgreSQL
+- **Auth**: Auth.js v5 (Google OAuth)
+- **AI**: Anthropic Claude
+- **PWA**: Service Worker, Web Push API
+- **Datos**: Open-Meteo, IFOP, SUBPESCA, Copernicus
+
+## Instalación Rápida
 
 ```bash
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env.local
+
+# Base de datos
+npx prisma migrate dev --name init
+
+# Generar VAPID keys
+node lib/vapid-keys-generator.js
+
+# Ejecutar desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Documentación
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- [SETUP_CHECKLIST.md](./SETUP_CHECKLIST.md) - Configuración completa
+- [PUSH_NOTIFICATIONS_SETUP.md](./PUSH_NOTIFICATIONS_SETUP.md) - Notificaciones
+- [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md) - Despliegue
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Versión
 
-## Learn More
+1.0.0 - Producción listo ✅
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+**Última actualización**: 2026-05-22
