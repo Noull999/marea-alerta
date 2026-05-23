@@ -82,7 +82,7 @@ export async function GET(req: Request) {
           })
 
           if (cached) {
-            return cached.datos as ZonasConDatos
+            return cached.datos as unknown as ZonasConDatos
           }
 
           // Si no está cacheado, fetch desde Copernicus

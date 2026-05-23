@@ -121,5 +121,5 @@ export function calcularRiesgo(factores: FactoresRiesgo): ResultadoRiesgo {
       ? 'RIESGO MODERADO: Monitoree continuamente. Esté preparado para cosechar si el riesgo aumenta.'
       : 'RIESGO NORMAL: Condiciones operacionales. Continúe vigilancia rutinaria.'
 
-  return { nivel, normalizedScore, score: normalizedScore, factores: factoresActivos, recomendacion }
+  return { nivel, score: normalizedScore, factores: factoresActivos, recomendacion }
 }

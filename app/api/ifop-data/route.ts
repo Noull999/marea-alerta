@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type') || 'all' // 'current', 'history', 'zone', 'all'
-    const zona = searchParams.get('zona')
+    const zona = searchParams.get('zona') || undefined
     const años = parseInt(searchParams.get('años') || '5')
 
     if (type === 'current') {

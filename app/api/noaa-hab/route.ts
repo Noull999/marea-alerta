@@ -5,7 +5,7 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url)
     const type = searchParams.get('type') || 'forecast' // 'forecast' o 'history'
-    const zona = searchParams.get('zona')
+    const zona = searchParams.get('zona') || undefined
     const days = parseInt(searchParams.get('days') || '90')
 
     if (type === 'forecast') {
