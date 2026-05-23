@@ -19,6 +19,7 @@ model User {
   centros       Centro[]
   bitacora      BitacoraEntry[]
   suscripciones PushSubscription[]
+  alertPreferences AlertPreference?
   createdAt     DateTime  @default(now())
 }
 
@@ -112,4 +113,97 @@ model FanDataCache {
   datos       Json
   fetchedAt   DateTime @default(now())
   validUntil  DateTime
+}
+
+model AlertPreference {
+  id          String   @id @default(cuid())
+  userId      String   @unique
+  alertaRojo   Boolean  @default(true)
+  alertaAmarillo Boolean @default(true)
+  alertaVerde Boolean  @default(false)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model CopernicusDataCache {
+  id            String   @id @default(cuid())
+  zona          String
+  lat           Float
+  lon           Float
+  sst           Float    // Sea Surface Temperature en °C
+  chlorophyll   Float    // Chlorophyll concentration en mg/m³
+  anomalia      Float    // SST anomaly vs historical mean
+  corrienteU    Float?   // Zonal current component
+  corrienteV    Float?   // Meridional current component
+  fetchedAt     DateTime @default(now())
+  validUntil    DateTime
+  createdAt     DateTime @default(now())
+  @@index([zona])
+  @@index([validUntil])
+}
+
+model HABAlert {
+  id            String   @id @default(cuid())
+  zona          String
+  lat           Float
+  lon           Float
+  fecha         DateTime
+  intensidad    String   // LOW, MODERATE, HIGH
+  especie       String
+  descripcion   String?
+  fuente        String   @default("noaa") // noaa, ifop
+  url           String?
+  createdAt     DateTime @default(now())
+  @@index([zona])
+  @@index([fecha])
+  @@index([fuente])
+}
+
+model IFOPMonitoring {
+  id                String   @id @default(cuid())
+  zona              String
+  fecha             DateTime
+  especieDetectada  String
+  toxicidad         Float?   // µg/kg
+  nivelAlerta       String   // NORMAL, ALERTA, CUARENTENA
+  toxicidadLimite   Float    @default(400) // Regulatory limit µg/kg
+  notas             String?
+  fuente            String   @default("ifop")
+  createdAt         DateTime @default(now())
+  @@index([zona])
+  @@index([fecha])
+  @@index([nivelAlerta])
+}
+
+model SHOAMareasCache {
+  id            String   @id @default(cuid())
+  puerto        String
+  fecha         DateTime
+  nivelPromedio Float    // cm
+  variabilidad  Float    // cm (max - min)
+  pleamares     Int      // number of high tides
+  bajamares     Int      // number of low tides
+  optimo        Boolean  @default(false)
+  fetchedAt     DateTime @default(now())
+  validUntil    DateTime
+  createdAt     DateTime @default(now())
+  @@index([puerto])
+  @@index([fecha])
+  @@index([validUntil])
+}
+
+model EstadoMarCache {
+  id                String   @id @default(cuid())
+  zona              String
+  alturaOlas        String   // ej: "0.5-1.0 m"
+  direccionViento   String   // ej: "NW"
+  velocidadViento   String   // ej: "15-25 km/h"
+  tendencia         String   // Aumentando, Disminuyendo, Sin cambios
+  riesgoNavegacion  String   // BAJO, MODERADO, ALTO
+  fetchedAt         DateTime @default(now())
+  validUntil        DateTime
+  createdAt         DateTime @default(now())
+  @@index([zona])
+  @@index([validUntil])
 }
