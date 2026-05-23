@@ -2,13 +2,46 @@ import { NextResponse } from 'next/server'
 import { fetchMarineData } from '@/lib/open-meteo'
 import { db } from '@/lib/db'
 
-const ZONAS_REFERENCIA = [
-  { nombre: 'Chiloé Norte', lat: -41.9, lon: -73.7 },
-  { nombre: 'Chiloé Sur', lat: -43.1, lon: -73.6 },
-  { nombre: 'Calbuco', lat: -41.8, lon: -73.1 },
-  { nombre: 'Cochamó', lat: -41.5, lon: -72.3 },
-  { nombre: 'Hualaihué', lat: -42.0, lon: -72.6 },
+// Zonas nombradas principales (ciudades/puertos)
+const ZONAS_NOMBRADAS = [
+  { nombre: 'Puerto Montt', lat: -41.33, lon: -72.76 },
+  { nombre: 'Calbuco', lat: -41.77, lon: -73.15 },
+  { nombre: 'Ancud', lat: -41.87, lon: -73.82 },
+  { nombre: 'Dalcahue', lat: -42.39, lon: -73.69 },
+  { nombre: 'Castro', lat: -42.48, lon: -73.77 },
+  { nombre: 'Achao', lat: -42.45, lon: -73.89 },
+  { nombre: 'Quellón', lat: -43.12, lon: -73.62 },
+  { nombre: 'La Unión', lat: -43.15, lon: -72.58 },
+  { nombre: 'Osorno', lat: -40.58, lon: -72.53 },
+  { nombre: 'Puerto Varas', lat: -41.31, lon: -72.37 },
 ]
+
+// Función para generar grid de puntos entre zonas (cada ~20km)
+function generateGridPoints() {
+  const gridPoints = []
+  // Grid a lo largo de la costa de Chiloé (norte-sur)
+  const startLat = -40.5
+  const endLat = -43.5
+  const gridSpacing = 0.18 // ~20km en grados
+
+  for (let lat = startLat; lat <= endLat; lat += gridSpacing) {
+    // Costa oeste de Chiloé
+    gridPoints.push({
+      nombre: `Zona Costa Oeste ${Math.abs(lat).toFixed(1)}°`,
+      lat: parseFloat(lat.toFixed(2)),
+      lon: -73.85,
+    })
+    // Costa este de Chiloé
+    gridPoints.push({
+      nombre: `Zona Costa Este ${Math.abs(lat).toFixed(1)}°`,
+      lat: parseFloat(lat.toFixed(2)),
+      lon: -72.5,
+    })
+  }
+  return gridPoints
+}
+
+const ZONAS_REFERENCIA = [...ZONAS_NOMBRADAS, ...generateGridPoints()]
 
 interface ZonaRiesgo {
   nombre: string
@@ -19,9 +52,9 @@ interface ZonaRiesgo {
 }
 
 function calcularNivelRiesgo(waveHeight: number): ZonaRiesgo['nivel'] {
-  if (waveHeight < 0.5) return 'AMARILLO'
-  if (waveHeight < 1.5) return 'VERDE'
-  return 'VERDE'
+  if (waveHeight < 0.5) return 'VERDE'    // Oleaje bajo - seguro
+  if (waveHeight < 1.5) return 'AMARILLO' // Oleaje moderado - precaución
+  return 'ROJO'                            // Oleaje alto - peligro
 }
 
 function getRecomendacion(nivel: ZonaRiesgo['nivel']): string {
