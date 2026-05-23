@@ -46,42 +46,42 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
           <nav className="lg:col-span-1">
             <div className="sticky top-24 space-y-1">
               <Link
-                href={"/" as Route}
+                href={"/dashboard" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <MapPin className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Inicio</span>
               </Link>
               <Link
-                href={"/alertas" as Route}
+                href={"/dashboard/alertas" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <AlertTriangle className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Alertas</span>
               </Link>
               <Link
-                href={"/centros" as Route}
+                href={"/dashboard/centros" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <MapPin className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Mis Centros</span>
               </Link>
               <Link
-                href={"/oceanografico" as Route}
+                href={"/dashboard/oceanografico" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <Waves className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Oceanografía</span>
               </Link>
               <Link
-                href={"/bitacora" as Route}
+                href={"/dashboard/bitacora" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <BookOpen className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Bitácora</span>
               </Link>
               <Link
-                href={"/asistente" as Route}
+                href={"/dashboard/asistente" as Route}
                 className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
               >
                 <MessageSquare className="h-5 w-5 flex-shrink-0" />
@@ -89,7 +89,7 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
               </Link>
               <div className="border-t border-gray-200 my-2 pt-2">
                 <Link
-                  href={"/configuracion" as Route}
+                  href={"/dashboard/configuracion" as Route}
                   className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
                 >
                   <Settings className="h-5 w-5 flex-shrink-0" />
