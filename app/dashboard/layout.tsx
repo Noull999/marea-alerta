@@ -4,7 +4,7 @@ import { Route } from 'next'
 import { auth } from '@/lib/auth'
 import { signOut } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import { MapPin, AlertTriangle, BookOpen, MessageSquare, LogOut, Settings } from 'lucide-react'
+import { MapPin, AlertTriangle, BookOpen, MessageSquare, LogOut, Settings, Waves } from 'lucide-react'
 
 async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await auth()
@@ -65,6 +65,13 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
               >
                 <MapPin className="h-5 w-5 flex-shrink-0" />
                 <span className="text-sm font-medium hidden sm:inline">Mis Centros</span>
+              </Link>
+              <Link
+                href={"/oceanografico" as Route}
+                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
+              >
+                <Waves className="h-5 w-5 flex-shrink-0" />
+                <span className="text-sm font-medium hidden sm:inline">Oceanografía</span>
               </Link>
               <Link
                 href={"/bitacora" as Route}

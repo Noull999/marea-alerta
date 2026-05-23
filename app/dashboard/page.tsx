@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import { RiskMap } from '@/components/mapa/RiskMap'
 import { AlertList } from '@/components/alertas/AlertList'
 import { RecommendationCard } from '@/components/recomendaciones/RecommendationCard'
+import { OceanographicDataPanel } from '@/components/oceanograficos/OceanographicDataPanel'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -106,6 +107,20 @@ export default async function DashboardPage() {
           </div>
         </div>
       </div>
+
+      {/* Datos Oceanográficos Detallados */}
+      {centrosUsuario.length > 0 && (
+        <div>
+          <h2 className="text-lg font-semibold text-gray-900 mb-4">
+            Datos Oceanográficos - {centrosUsuario[0].nombre}
+          </h2>
+          <OceanographicDataPanel
+            lat={centrosUsuario[0].latitud}
+            lon={centrosUsuario[0].longitud}
+            zona={centrosUsuario[0].nombre}
+          />
+        </div>
+      )}
 
       {/* Recomendaciones para tus Centros */}
       {centrosUsuario.length > 0 && (
