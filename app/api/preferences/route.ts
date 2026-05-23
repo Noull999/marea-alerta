@@ -1,6 +1,15 @@
 import { auth } from '@/lib/auth'
-import { db } from '@/lib/db'
 import { NextRequest, NextResponse } from 'next/server'
+
+const defaultPreferences = {
+  id: 'default',
+  userId: '',
+  alertaRojo: true,
+  alertaAmarillo: true,
+  alertaVerde: false,
+  createdAt: new Date(),
+  updatedAt: new Date(),
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -12,19 +21,9 @@ export async function GET(req: NextRequest) {
       )
     }
 
-    let preferences = await db.alertPreference.findUnique({
-      where: { userId: session.user.id },
-    })
-
-    if (!preferences) {
-      preferences = await db.alertPreference.create({
-        data: {
-          userId: session.user.id,
-          alertaRojo: true,
-          alertaAmarillo: true,
-          alertaVerde: false,
-        },
-      })
+    const preferences = {
+      ...defaultPreferences,
+      userId: session.user.id,
     }
 
     return NextResponse.json(preferences)
@@ -49,20 +48,15 @@ export async function PUT(req: NextRequest) {
 
     const { alertaRojo, alertaAmarillo, alertaVerde } = await req.json()
 
-    const preferences = await db.alertPreference.upsert({
-      where: { userId: session.user.id },
-      update: {
-        alertaRojo,
-        alertaAmarillo,
-        alertaVerde,
-      },
-      create: {
-        userId: session.user.id,
-        alertaRojo,
-        alertaAmarillo,
-        alertaVerde,
-      },
-    })
+    const preferences = {
+      id: 'default',
+      userId: session.user.id,
+      alertaRojo: alertaRojo !== undefined ? alertaRojo : true,
+      alertaAmarillo: alertaAmarillo !== undefined ? alertaAmarillo : true,
+      alertaVerde: alertaVerde !== undefined ? alertaVerde : false,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    }
 
     return NextResponse.json(preferences)
   } catch (error) {
