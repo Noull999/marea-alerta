@@ -28,8 +28,8 @@ import { getRegion, REGIONS } from '@/lib/regional-zones'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const regionId = searchParams.get('region')
-    const zoneId = searchParams.get('zone')
+    const regionId = searchParams.get('region') || undefined
+    const zoneId = searchParams.get('zone') || undefined
 
     // Allow explicit lat/lon override, or use region/zone to select them
     let lat = parseFloat(searchParams.get('lat') || '')

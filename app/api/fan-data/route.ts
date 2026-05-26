@@ -9,7 +9,7 @@ import { getAllZones, getRegionZones, REGIONS } from '@/lib/regional-zones'
 import { db } from '@/lib/db'
 
 // Get zones from regional configuration or all zones if no region specified
-function getZonasReferencia(regionId?: string) {
+function getZonasReferencia(regionId?: string | null) {
   if (regionId) {
     const zones = getRegionZones(regionId)
     return zones.map(z => ({ nombre: z.nombre, lat: z.lat, lon: z.lon }))
