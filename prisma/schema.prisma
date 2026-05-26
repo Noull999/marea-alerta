@@ -207,3 +207,13 @@ model EstadoMarCache {
   @@index([zona])
   @@index([validUntil])
 }
+
+model Webhook {
+  id        String   @id @default(cuid())
+  url       String
+  token     String
+  zonas     String[] // Array of zona names
+  activo    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
