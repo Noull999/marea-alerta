@@ -1,52 +1,22 @@
-import { NextResponse } from 'next/server'
+import { NextResponse, NextRequest } from 'next/server'
 import { fetchMarineData } from '@/lib/open-meteo'
 import { fetchCopernicusSSTData } from '@/lib/copernicus'
 import { fetchWaveWatchIII } from '@/lib/wavewatch-iii'
 import { fetchNASAOceancolorData } from '@/lib/nasa-oceancolor'
 import { fetchUpwellingIndex, predictBloomTiming } from '@/lib/noaa-upwelling-index'
 import { fetchHyCOMData } from '@/lib/hycom'
+import { getAllZones, getRegionZones, REGIONS } from '@/lib/regional-zones'
 import { db } from '@/lib/db'
 
-// Zonas nombradas principales (ciudades/puertos)
-const ZONAS_NOMBRADAS = [
-  { nombre: 'Puerto Montt', lat: -41.33, lon: -72.76 },
-  { nombre: 'Calbuco', lat: -41.77, lon: -73.15 },
-  { nombre: 'Ancud', lat: -41.87, lon: -73.82 },
-  { nombre: 'Dalcahue', lat: -42.39, lon: -73.69 },
-  { nombre: 'Castro', lat: -42.48, lon: -73.77 },
-  { nombre: 'Achao', lat: -42.45, lon: -73.89 },
-  { nombre: 'Quellón', lat: -43.12, lon: -73.62 },
-  { nombre: 'La Unión', lat: -43.15, lon: -72.58 },
-  { nombre: 'Osorno', lat: -40.58, lon: -72.53 },
-  { nombre: 'Puerto Varas', lat: -41.31, lon: -72.37 },
-]
-
-// Función para generar grid de puntos entre zonas (cada ~20km)
-function generateGridPoints() {
-  const gridPoints = []
-  // Grid a lo largo de la costa de Chiloé (norte-sur)
-  const startLat = -40.5
-  const endLat = -43.5
-  const gridSpacing = 0.18 // ~20km en grados
-
-  for (let lat = startLat; lat <= endLat; lat += gridSpacing) {
-    // Costa oeste de Chiloé
-    gridPoints.push({
-      nombre: `Zona Costa Oeste ${Math.abs(lat).toFixed(1)}°`,
-      lat: parseFloat(lat.toFixed(2)),
-      lon: -73.85,
-    })
-    // Costa este de Chiloé
-    gridPoints.push({
-      nombre: `Zona Costa Este ${Math.abs(lat).toFixed(1)}°`,
-      lat: parseFloat(lat.toFixed(2)),
-      lon: -72.5,
-    })
+// Get zones from regional configuration or all zones if no region specified
+function getZonasReferencia(regionId?: string) {
+  if (regionId) {
+    const zones = getRegionZones(regionId)
+    return zones.map(z => ({ nombre: z.nombre, lat: z.lat, lon: z.lon }))
   }
-  return gridPoints
+  const allZones = getAllZones()
+  return allZones.map(z => ({ nombre: z.nombre, lat: z.lat, lon: z.lon }))
 }
-
-const ZONAS_REFERENCIA = [...ZONAS_NOMBRADAS, ...generateGridPoints()]
 
 interface ZonaRiesgo {
   nombre: string
@@ -131,9 +101,13 @@ function getRecomendacion(nivel: ZonaRiesgo['nivel']): string {
   return recomendaciones[nivel] || 'Sin información disponible'
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const { searchParams } = new URL(request.url)
+    const regionId = searchParams.get('region')
+
     const timestamp = new Date().toISOString()
+    const ZONAS_REFERENCIA = getZonasReferencia(regionId)
 
     const resultados = await Promise.all(
       ZONAS_REFERENCIA.map(async (zona): Promise<ZonaRiesgo> => {
@@ -244,6 +218,15 @@ export async function GET() {
     return NextResponse.json({
       zonas: resultados,
       timestamp,
+      regionInfo: {
+        selected: regionId || 'all',
+        availableRegions: REGIONS.map(r => ({
+          id: r.id,
+          nombre: r.nombre,
+          pais: r.pais,
+          zonaCount: r.zonas.length
+        }))
+      },
       dataSources: {
         primary: ['Copernicus Marine (SST, Chlorophyll)', 'Open-Meteo / WaveWatch III (Waves)'],
         enhanced: ['NASA OCEANCOLOR (Clorofila 1km)', 'HyCOM (9km resolution)', 'NOAA Upwelling Index (14-21 day forecast)'],

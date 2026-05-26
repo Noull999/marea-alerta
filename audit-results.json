@@ -1,0 +1,65 @@
+{
+  "timestamp": "2026-05-26T16:13:47.615Z",
+  "results": [
+    {
+      "name": "Login Page",
+      "description": "Página de inicio de sesión",
+      "url": "http://localhost:3000/login",
+      "status": "PASS",
+      "loadTime": "1110ms",
+      "title": "MareaAlerta - Monitoreo de Riesgo de Marea Roja",
+      "stats": {
+        "buttons": 2,
+        "links": 0,
+        "inputs": 1,
+        "imagesWithoutAlt": 0
+      },
+      "accessibility": {
+        "htmlLang": "es",
+        "imagesWithoutAlt": "✅ All images have alt text"
+      },
+      "screenshot": "audit-screenshots\\Login_Page.png",
+      "consoleErrors": []
+    },
+    {
+      "name": "Registration Page",
+      "description": "Página de registro",
+      "url": "http://localhost:3000/registro",
+      "status": "PASS",
+      "loadTime": "1695ms",
+      "title": "MareaAlerta - Monitoreo de Riesgo de Marea Roja",
+      "stats": {
+        "buttons": 2,
+        "links": 1,
+        "inputs": 0,
+        "imagesWithoutAlt": 0
+      },
+      "accessibility": {
+        "htmlLang": "es",
+        "imagesWithoutAlt": "✅ All images have alt text"
+      },
+      "screenshot": "audit-screenshots\\Registration_Page.png",
+      "consoleErrors": []
+    },
+    {
+      "name": "Home Page",
+      "description": "Página principal",
+      "url": "http://localhost:3000/",
+      "status": "PASS",
+      "loadTime": "912ms",
+      "title": "MareaAlerta - Monitoreo de Riesgo de Marea Roja",
+      "stats": {
+        "buttons": 2,
+        "links": 0,
+        "inputs": 1,
+        "imagesWithoutAlt": 0
+      },
+      "accessibility": {
+        "htmlLang": "es",
+        "imagesWithoutAlt": "✅ All images have alt text"
+      },
+      "screenshot": "audit-screenshots\\Home_Page.png",
+      "consoleErrors": []
+    }
+  ]
+}

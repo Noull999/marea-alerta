@@ -23,14 +23,36 @@ import { fetchHyCOMData, compareResolutions } from '@/lib/hycom'
 import { analyzeHistoricalContext } from '@/lib/glorys-reanalysis'
 import { fetchUpwellingIndex, predictBloomTiming } from '@/lib/noaa-upwelling-index'
 import { fetchCopernicusSSTData } from '@/lib/copernicus'
+import { getRegion, REGIONS } from '@/lib/regional-zones'
 
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const lat = parseFloat(searchParams.get('lat') || '-42.48')
-    const lon = parseFloat(searchParams.get('lon') || '-73.77')
-    const zona = searchParams.get('zona') || 'Castro'
-    const upwellingPoint = searchParams.get('upwelling_point') || '150'
+    const regionId = searchParams.get('region')
+    const zoneId = searchParams.get('zone')
+
+    // Allow explicit lat/lon override, or use region/zone to select them
+    let lat = parseFloat(searchParams.get('lat') || '')
+    let lon = parseFloat(searchParams.get('lon') || '')
+    let zona = searchParams.get('zona') || 'Castro'
+    let upwellingPoint = searchParams.get('upwelling_point') || '150'
+
+    // If region specified, use first zone's coordinates
+    if (regionId && isNaN(lat) && isNaN(lon)) {
+      const region = getRegion(regionId)
+      if (region && region.zonas.length > 0) {
+        const firstZone = region.zonas[0]
+        lat = firstZone.lat
+        lon = firstZone.lon
+        zona = firstZone.nombre
+        upwellingPoint = firstZone.upwellingPoint
+      }
+    }
+
+    // Default to Castro if still not set
+    if (isNaN(lat)) lat = -42.48
+    if (isNaN(lon)) lon = -73.77
+    if (!upwellingPoint) upwellingPoint = '150'
 
     const timestamp = new Date().toISOString()
 
@@ -106,6 +128,16 @@ export async function GET(request: NextRequest) {
       zona,
       coordinates: { lat, lon },
       timestamp,
+      regionInfo: {
+        regionId: regionId || 'default',
+        availableRegions: REGIONS.map(r => ({
+          id: r.id,
+          nombre: r.nombre,
+          pais: r.pais,
+          upwellingPoint: r.upwellingPoint,
+          zonaCount: r.zonas.length
+        }))
+      },
       data_sources: {
         satellite: ['Copernicus', 'NASA OCEANCOLOR'],
         in_situ: ['METAR', 'ARGO', 'GTSPP'],
