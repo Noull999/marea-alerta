@@ -36,22 +36,22 @@ export async function GET() {
     ])
 
     const estadisticas24h = {
-      alertasRojo: alertasRecientes.filter((a) => a.nivel === 'ROJO').length,
-      alertasAmarillo: alertasRecientes.filter((a) => a.nivel === 'AMARILLO')
+      alertasRojo: alertasRecientes.filter((a: any) => a.nivel === 'ROJO').length,
+      alertasAmarillo: alertasRecientes.filter((a: any) => a.nivel === 'AMARILLO')
         .length,
-      alertasVerde: alertasRecientes.filter((a) => a.nivel === 'VERDE').length,
+      alertasVerde: alertasRecientes.filter((a: any) => a.nivel === 'VERDE').length,
     }
 
     const estadisticas7d = {
-      alertasRojo: alertasUltimos7.filter((a) => a.nivel === 'ROJO').length,
-      alertasAmarillo: alertasUltimos7.filter((a) => a.nivel === 'AMARILLO')
+      alertasRojo: alertasUltimos7.filter((a: any) => a.nivel === 'ROJO').length,
+      alertasAmarillo: alertasUltimos7.filter((a: any) => a.nivel === 'AMARILLO')
         .length,
-      alertasVerde: alertasUltimos7.filter((a) => a.nivel === 'VERDE').length,
+      alertasVerde: alertasUltimos7.filter((a: any) => a.nivel === 'VERDE').length,
     }
 
     // Agrupar alertas por zona (últimos 7 días)
     const alertasPorZona = alertasUltimos7.reduce(
-      (acc, alerta) => {
+      (acc: Record<string, number>, alerta: any) => {
         acc[alerta.zona] = (acc[alerta.zona] || 0) + 1
         return acc
       },
@@ -60,7 +60,7 @@ export async function GET() {
 
     // Distribuir eventos HAB por especie
     const habPorEspecie = eventosHAB.reduce(
-      (acc, evento) => {
+      (acc: Record<string, number>, evento: any) => {
         acc[evento.especie] = (acc[evento.especie] || 0) + 1
         return acc
       },

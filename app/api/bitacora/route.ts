@@ -15,7 +15,7 @@ export async function GET() {
     })
 
     return NextResponse.json({
-      entries: entries.map((e) => ({
+      entries: entries.map((e: typeof entries[number]) => ({
         id: e.id,
         fecha: e.fecha.toISOString(),
         centroId: e.centroId,

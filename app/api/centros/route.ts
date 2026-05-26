@@ -15,7 +15,7 @@ export async function GET() {
     })
 
     return NextResponse.json({
-      centros: centros.map((c) => ({
+      centros: centros.map((c: typeof centros[number]) => ({
         id: c.id,
         nombre: c.nombre,
         latitud: c.latitud,

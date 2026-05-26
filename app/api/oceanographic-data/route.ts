@@ -183,14 +183,14 @@ export async function GET(req: Request) {
             fetchedAt: copernicusData.fetchedAt,
           }
         : undefined,
-      hab_alerts: zoneNOAAAlerts.map((a) => ({
+      hab_alerts: zoneNOAAAlerts.map((a: any) => ({
         id: a.id,
         intensity: a.intensity,
         species: a.species,
       })),
       ifop_events: ifopEventos
         .slice(-10) // Last 10 events
-        .map((e) => ({
+        .map((e: any) => ({
           fecha: e.fecha,
           especie: e.especie,
           toxicidad: e.toxicidad,
