@@ -7,7 +7,7 @@ export default async function Home() {
     const timeoutPromise = new Promise<never>((_, reject) =>
       setTimeout(() => reject(new Error('Auth timeout')), 5000)
     )
-    const session = (await Promise.race([authPromise, timeoutPromise])) as Awaited<ReturnType<typeof auth>>
+    const session = await Promise.race([authPromise, timeoutPromise]) as any
 
     if (session?.user) {
       redirect('/dashboard/alertas')
