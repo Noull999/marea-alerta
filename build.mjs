@@ -5,6 +5,17 @@ const execAsync = promisify(exec)
 
 async function build() {
   try {
+    console.log('Generating Prisma Client...')
+    try {
+      const { stdout, stderr } = await execAsync('npx prisma generate')
+      console.log('Prisma generation output:', stdout)
+      if (stderr) console.log('Prisma generation stderr:', stderr)
+      console.log('Prisma Client generated successfully')
+    } catch (genError) {
+      console.error('Prisma generation error:', genError.message)
+      console.log('Continuing despite generation error...')
+    }
+
     if (process.env.DATABASE_URL) {
       console.log('Deploying database migrations...')
       try {
