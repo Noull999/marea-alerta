@@ -30,8 +30,10 @@ export async function fetchNASAOceancolorData(
     if (nasaData) return nasaData
   }
 
-  // Fallback: Open-Meteo (gratis, sin API key)
-  return fetchNASAViaOpenMeteo(lat, lon)
+  // Sin fuente satelital real de clorofila no devolvemos un valor inventado.
+  // Open-Meteo NO provee clorofila; estimarla con SST + ruido era engañoso.
+  // Retornamos null y la confianza del modelo baja en consecuencia.
+  return null
 }
 
 async function fetchNASAReal(
@@ -72,51 +74,6 @@ async function fetchNASAReal(
     return null
   } catch (error) {
     console.error('NASA API error:', error)
-    return null
-  }
-}
-
-async function fetchNASAViaOpenMeteo(
-  lat: number,
-  lon: number
-): Promise<NASAOceancolorResponse | null> {
-  try {
-    // Open-Meteo como fallback (gratis, sin credenciales)
-    // Estima chlorophyll basado en temperatura y datos históricos regionales
-    const url = `https://api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&current=sea_surface_temperature`
-
-    const response = await fetch(url, {
-      next: { revalidate: 3600 } // 1 hora
-    })
-
-    if (!response.ok) return null
-
-    const data = await response.json()
-    const sst = data.current?.sea_surface_temperature ?? 12.5
-
-    // Estimación de chlorophyll (regresión empírica)
-    // Mareas rojas típicas: 12-16°C, alta clorofila
-    let estimatedChlorophyll = 0.5
-    if (sst >= 12 && sst <= 16) {
-      estimatedChlorophyll = 1.2 + Math.random() * 0.8
-    } else if (sst > 16) {
-      estimatedChlorophyll = 0.8 + Math.random() * 0.4
-    } else {
-      estimatedChlorophyll = 0.3 + Math.random() * 0.4
-    }
-
-    return {
-      date: new Date().toISOString().split('T')[0],
-      latitude: lat,
-      longitude: lon,
-      chlorophyll_concentration: Math.max(0.1, estimatedChlorophyll),
-      chlorophyll_source: 'OpenMeteo',
-      confidence: 0.6,
-      cloud_percentage: 0,
-      quality_flag: 'ESTIMATED'
-    }
-  } catch (error) {
-    console.error('OpenMeteo fallback error:', error)
     return null
   }
 }

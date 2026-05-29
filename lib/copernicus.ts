@@ -2,7 +2,7 @@ export interface CopernicusSSTData {
   latitude: number
   longitude: number
   sst: number // Sea Surface Temperature en °C
-  clorofila: number // Chlorophyll concentration en mg/m³
+  clorofila: number | null // Chlorophyll mg/m³ — null si no hay fuente real
   anomalia: number // SST anomaly vs historical mean
   fetchedAt: string
 }
@@ -38,19 +38,26 @@ export async function fetchCopernicusSSTData(
 
     const data = await res.json()
 
-    // Extraer valores del response OPeNDAP
-    const sst = data.thetao?.[0]?.value ?? 12.5 + Math.random() * 3
-    const clorofila = data.chl?.[0]?.value ?? 0.5 + Math.random() * 2
+    // Extraer valores del response OPeNDAP. Si no vienen, NO fabricar:
+    // caer al fallback real (Open-Meteo) en lugar de inventar números.
+    const sstRaw = data.thetao?.[0]?.value
+    const sst = sstRaw !== undefined ? parseFloat(sstRaw) : NaN
+    if (Number.isNaN(sst)) {
+      return fetchCopernicusViaOpenMeteo(lat, lon)
+    }
+
+    const chlRaw = data.chl?.[0]?.value
+    const clorofila = chlRaw !== undefined ? parseFloat(chlRaw) : null
 
     // Calcular anomalía comparando con climatología
     const historicalMean = 13.0 // Promedio histórico para Chiloé
-    const anomalia = parseFloat(sst) - historicalMean
+    const anomalia = sst - historicalMean
 
     return {
       latitude: lat,
       longitude: lon,
-      sst: parseFloat(sst),
-      clorofila: parseFloat(clorofila),
+      sst,
+      clorofila: clorofila !== null && Number.isNaN(clorofila) ? null : clorofila,
       anomalia,
       fetchedAt: new Date().toISOString(),
     }
@@ -73,19 +80,22 @@ async function fetchCopernicusViaOpenMeteo(
 
     const data = await res.json()
 
-    // SST real de Open-Meteo
-    const sst = data.current?.sea_surface_temperature ?? 12.5
+    // SST real de Open-Meteo. Si no viene, no hay dato fiable -> null.
+    const sst = data.current?.sea_surface_temperature
+    if (sst === undefined || sst === null) return null
 
-    // Chlorophyll estimado (proxy basado en SST + temp media regional)
+    // Anomalía aproximada vs media regional fija (Chiloé). Es una baseline
+    // gruesa, no una climatología real: usar con baja confianza.
     const historicalMean = 13.0
     const anomalia = sst - historicalMean
-    const clorofila = Math.max(0.2, 0.8 - (anomalia * 0.15)) + Math.random() * 0.5
 
+    // Open-Meteo NO entrega clorofila. No la fabricamos: queda null y la
+    // confianza del modelo baja en consecuencia.
     return {
       latitude: lat,
       longitude: lon,
       sst,
-      clorofila,
+      clorofila: null,
       anomalia,
       fetchedAt: new Date().toISOString(),
     }
