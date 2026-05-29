@@ -1,21 +1,27 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { DEMO_USER_EMAIL } from '@/lib/auth'
 
 export async function POST() {
   try {
-    const demoUser = await db.user.upsert({
-      where: { email: 'demo@marea-alert.cl' },
+    // Solo disponible en modo demo (sin Google OAuth configurado).
+    if (process.env.GOOGLE_ID && process.env.GOOGLE_SECRET) {
+      return NextResponse.json({ error: 'Not available' }, { status: 404 })
+    }
+
+    await db.user.upsert({
+      where: { email: DEMO_USER_EMAIL },
       update: {},
       create: {
-        email: 'demo@marea-alert.cl',
+        email: DEMO_USER_EMAIL,
         name: 'Usuario Demo',
         image: '🦪',
       },
     })
 
+    // No exponemos el objeto User completo.
     return NextResponse.json({
       success: true,
-      user: demoUser,
       message: 'Usuario de demostración creado/verificado',
     })
   } catch (error) {

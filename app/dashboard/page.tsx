@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
-import { RiskMap } from '@/components/mapa/RiskMap'
+import { RiskMap, type ZonaRiesgo } from '@/components/mapa/RiskMap'
 import { AlertList } from '@/components/alertas/AlertList'
 import { RecommendationCard } from '@/components/recomendaciones/RecommendationCard'
 import { OceanographicDataPanel } from '@/components/oceanograficos/OceanographicDataPanel'
@@ -12,7 +12,7 @@ export default async function DashboardPage() {
 
   let centrosUsuario: Awaited<ReturnType<typeof db.centro.findMany>> = []
   let alertas: Awaited<ReturnType<typeof db.alerta.findMany>> = []
-  let zonas: any = { zonas: [] }
+  let zonas: { zonas: ZonaRiesgo[] } = { zonas: [] }
 
   try {
     const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000'
@@ -31,14 +31,14 @@ export default async function DashboardPage() {
         }),
       db.centro.findMany({
         where: { userId: session.user.id },
-      }).catch((err: any) => {
+      }).catch((err: unknown) => {
         console.error('Error fetching centros:', err)
         return []
       }),
       db.alerta.findMany({
         orderBy: { createdAt: 'desc' },
         take: 5,
-      }).catch((err: any) => {
+      }).catch((err: unknown) => {
         console.error('Error fetching alertas:', err)
         return []
       }),
@@ -131,7 +131,7 @@ export default async function DashboardPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {centrosUsuario.map((centro) => {
               const zonaData = (zonas?.zonas || []).find(
-                (z: any) =>
+                (z: ZonaRiesgo) =>
                   z.nombre.toLowerCase().includes(centro.nombre.toLowerCase()) ||
                   (Math.abs(z.lat - centro.latitud) < 0.5 &&
                     Math.abs(z.lon - centro.longitud) < 0.5)
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
           alertas={alertas.map((a) => ({
             id: a.id,
             zona: a.zona,
-            nivel: a.nivel as any,
+            nivel: a.nivel as 'VERDE' | 'AMARILLO' | 'ROJO',
             descripcion: a.mensaje,
             createdAt: a.createdAt.toISOString(),
           }))}

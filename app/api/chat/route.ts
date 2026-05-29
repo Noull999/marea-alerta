@@ -1,6 +1,10 @@
-import { streamText } from 'ai'
+import { streamText, type ModelMessage } from 'ai'
 import { anthropic } from '@ai-sdk/anthropic'
 import { auth } from '@/lib/auth'
+
+// Modelo configurable. Por defecto usa el alias "-latest" para no quedar
+// fijado a una versión antigua; sobreescribir con ANTHROPIC_MODEL.
+const CHAT_MODEL = process.env.ANTHROPIC_MODEL || 'claude-3-5-sonnet-latest'
 
 const systemPrompt = `Eres MareaAlerta Assistant, un experto en acuicultura y alertas de marea roja (Floraciones Algales Nocivas - FAN) en Los Lagos, Chile.
 
@@ -11,10 +15,10 @@ Tu rol es ayudar a cultores de moluscos a:
 4. Cumplir con regulaciones de SERNAPESCA (Servicio Nacional de Pesca)
 5. Optimizar sus operaciones frente a condiciones adversas
 
-INFORMACIÓN DE RIESGO:
-- VERDE (0-29 puntos): Sin riesgo detectado
-- AMARILLO (30-59 puntos): Precaución, monitorear constantemente
-- ROJO (≥60 puntos o veda activa): Alto riesgo, evaluar cosecha inmediata o contactar SERNAPESCA
+INFORMACIÓN DE RIESGO (escala 0-100, debe coincidir con el motor de cálculo):
+- VERDE (0-39 puntos): Sin riesgo detectado
+- AMARILLO (40-69 puntos): Precaución, monitorear constantemente
+- ROJO (≥70 puntos o veda activa): Alto riesgo, evaluar cosecha inmediata o contactar SERNAPESCA
 
 TU TONO:
 - Profesional pero accesible
@@ -36,7 +40,9 @@ export async function POST(req: Request) {
       return new Response('Unauthorized', { status: 401 })
     }
 
-    const { messages } = await req.json()
+    const { messages } = (await req.json()) as {
+      messages: Array<{ role: 'user' | 'assistant' | 'system'; content: string }>
+    }
 
     if (!process.env.ANTHROPIC_API_KEY) {
       return new Response(
@@ -49,9 +55,9 @@ export async function POST(req: Request) {
     }
 
     const result = streamText({
-      model: anthropic('claude-3-5-sonnet-20241022'),
+      model: anthropic(CHAT_MODEL),
       system: systemPrompt,
-      messages: messages.map((m: any) => ({
+      messages: messages.map((m): ModelMessage => ({
         role: m.role,
         content: m.content,
       })),

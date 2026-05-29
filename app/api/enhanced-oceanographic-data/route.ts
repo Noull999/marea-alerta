@@ -103,7 +103,7 @@ export async function GET(request: NextRequest) {
       analyzeWindConditionsForBlooms(metarData.wind_speed, metarData.wind_direction) : null
 
     // Calculate comprehensive risk score
-    let riskFactors = {
+    const riskFactors = {
       sst_contribution: copernicusData ?
         Math.min((copernicusData.anomalia * 40) / 2, 40) : 0,
       chlorophyll_contribution: copernicusData ?

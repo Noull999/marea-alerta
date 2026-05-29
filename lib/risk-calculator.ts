@@ -99,7 +99,8 @@ export function calcularRiesgo(factores: FactoresRiesgo): ResultadoRiesgo {
     )
   }
 
-  // Tide variability (高variability = 低mixing = favorable para HAB)
+  // Variabilidad de mareas: alta variabilidad puede asociarse a menor mezcla
+  // sostenida, condición que puede favorecer la acumulación de FAN/HAB.
   const tideVar = factores.tideVariability || 100
   if (tideVar > 200) {
     score += 10

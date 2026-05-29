@@ -15,10 +15,18 @@ const MONITORED_ZONES = [
 ]
 
 export async function POST(req: Request) {
-  // Verificar token de autorización (si está configurado)
-  const authToken = req.headers.get('x-cron-token')
-  const expectedToken = process.env.CRON_SECRET_TOKEN || 'default-cron-token'
+  // Verificar token de autorización. Falla cerrado: si no hay secret
+  // configurado, el endpoint queda deshabilitado en lugar de usar un
+  // token por defecto conocido.
+  const expectedToken = process.env.CRON_SECRET_TOKEN
+  if (!expectedToken) {
+    return NextResponse.json(
+      { error: 'Cron not configured' },
+      { status: 503 }
+    )
+  }
 
+  const authToken = req.headers.get('x-cron-token')
   if (authToken !== expectedToken) {
     return NextResponse.json(
       { error: 'Unauthorized' },

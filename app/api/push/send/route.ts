@@ -21,9 +21,12 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Verificar que sea una solicitud autorizada (desde el servidor interno)
+    // Verificar que sea una solicitud autorizada (desde el servidor interno).
+    // Falla cerrado si no hay clave configurada para evitar que un header
+    // "Bearer undefined" sea aceptado.
+    const internalKey = process.env.INTERNAL_API_KEY
     const authHeader = request.headers.get('authorization')
-    if (authHeader !== `Bearer ${process.env.INTERNAL_API_KEY}`) {
+    if (!internalKey || authHeader !== `Bearer ${internalKey}`) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
@@ -72,10 +75,10 @@ export async function POST(request: NextRequest) {
           JSON.stringify(notificationData)
         )
         sent++
-      } catch (error: any) {
+      } catch (error) {
         console.error(`Error sending notification to ${sub.endpoint}:`, error)
         // Si el endpoint está expirado, eliminar la suscripción
-        if (error.statusCode === 410) {
+        if ((error as { statusCode?: number }).statusCode === 410) {
           await db.pushSubscription.delete({ where: { id: sub.id } })
         }
         failed++
