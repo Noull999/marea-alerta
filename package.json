@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "inspect:sernapesca": "node scripts/inspect-sernapesca.mjs",
+    "backtest": "node scripts/backtest.mjs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^3.0.79",
