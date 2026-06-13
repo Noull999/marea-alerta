@@ -3,17 +3,20 @@ import { Button } from '@/components/ui/button'
 import { Waves } from 'lucide-react'
 
 export default function LoginPage() {
+  const googleConfigured = Boolean(process.env.GOOGLE_ID && process.env.GOOGLE_SECRET)
+
   const handleGoogleSignIn = async () => {
     'use server'
-    if (process.env.GOOGLE_ID && process.env.GOOGLE_SECRET) {
-      await signIn('google', { redirectTo: '/dashboard/alertas' })
-    } else {
-      await signIn('credentials', {
-        email: 'demo@marea-alert.cl',
-        redirect: true,
-        redirectTo: '/dashboard/alertas'
-      })
-    }
+    await signIn('google', { redirectTo: '/dashboard' })
+  }
+
+  const handleDemoSignIn = async () => {
+    'use server'
+    await signIn('credentials', {
+      email: 'demo@marea-alert.cl',
+      redirect: true,
+      redirectTo: '/dashboard',
+    })
   }
 
   return (
@@ -42,22 +45,37 @@ export default function LoginPage() {
             Inicia sesión para ver el riesgo de marea roja en tus centros.
           </p>
 
-          {!process.env.GOOGLE_ID && (
-            <div className="mb-4 rounded-lg border border-primary/25 bg-primary/10 p-3 text-xs text-foreground/90">
-              <p className="mb-1 font-mono font-semibold uppercase tracking-wider text-primary">
-                Modo Demo
-              </p>
-              <p className="text-muted-foreground">
-                Google OAuth no está configurado. Usando login de demostración.
-              </p>
-            </div>
-          )}
+          <div className="space-y-3">
+            {/* Demo: acceso fiable, siempre disponible */}
+            <form action={handleDemoSignIn}>
+              <Button type="submit" size="lg" className="h-11 w-full text-sm">
+                Ingresar en modo Demo
+              </Button>
+            </form>
 
-          <form action={handleGoogleSignIn}>
-            <Button type="submit" size="lg" className="h-11 w-full text-sm">
-              {process.env.GOOGLE_ID ? 'Continuar con Google' : 'Ingresar (Demo)'}
-            </Button>
-          </form>
+            {/* Google: opción secundaria, solo si está configurado */}
+            {googleConfigured && (
+              <>
+                <div className="flex items-center gap-3 py-1">
+                  <span className="h-px flex-1 bg-border" />
+                  <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">
+                    o
+                  </span>
+                  <span className="h-px flex-1 bg-border" />
+                </div>
+                <form action={handleGoogleSignIn}>
+                  <Button
+                    type="submit"
+                    size="lg"
+                    variant="outline"
+                    className="h-11 w-full text-sm"
+                  >
+                    Continuar con Google
+                  </Button>
+                </form>
+              </>
+            )}
+          </div>
         </div>
 
         <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/60">

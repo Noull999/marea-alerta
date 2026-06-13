@@ -15,9 +15,19 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email) return null
-        const user = await db.user.findUnique({
-          where: { email: credentials.email as string },
-        })
+        const email = credentials.email as string
+
+        // El acceso de demostración crea el usuario al vuelo para que siempre
+        // funcione, sin depender de Google OAuth ni de un seed previo.
+        if (email === 'demo@marea-alert.cl') {
+          return db.user.upsert({
+            where: { email },
+            update: {},
+            create: { email, name: 'Usuario Demo', image: '🦪' },
+          })
+        }
+
+        const user = await db.user.findUnique({ where: { email } })
         return user ?? null
       },
     }),

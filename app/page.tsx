@@ -10,7 +10,7 @@ export default async function Home() {
     const session = await Promise.race([authPromise, timeoutPromise]) as any
 
     if (session?.user) {
-      redirect('/dashboard/alertas')
+      redirect('/dashboard')
     } else {
       redirect('/login')
     }
