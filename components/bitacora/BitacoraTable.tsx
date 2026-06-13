@@ -24,7 +24,7 @@ export function BitacoraTable({
     return (
       <div className="space-y-2 animate-pulse">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className="h-12 bg-gray-200 rounded-lg" />
+          <div key={i} className="h-12 rounded-lg bg-muted" />
         ))}
       </div>
     )
@@ -32,7 +32,7 @@ export function BitacoraTable({
 
   if (!entries.length) {
     return (
-      <div className="text-center py-8 text-gray-500">
+      <div className="py-10 text-center text-sm text-muted-foreground">
         <p>Sin registros en la bitácora</p>
       </div>
     )
@@ -40,9 +40,9 @@ export function BitacoraTable({
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
-      case 'ROJO': return 'bg-red-100 text-red-800'
-      case 'AMARILLO': return 'bg-yellow-100 text-yellow-800'
-      default: return 'bg-green-100 text-green-800'
+      case 'ROJO': return 'bg-red-500/15 text-red-300 ring-1 ring-red-500/30'
+      case 'AMARILLO': return 'bg-amber-500/15 text-amber-300 ring-1 ring-amber-500/30'
+      default: return 'bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30'
     }
   }
 
@@ -50,21 +50,21 @@ export function BitacoraTable({
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
         <thead>
-          <tr className="border-b border-gray-200">
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">
+          <tr className="border-b border-border">
+            <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Fecha
             </th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">
+            <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Riesgo
             </th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">
+            <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Observación
             </th>
-            <th className="text-left px-4 py-3 font-semibold text-gray-700">
+            <th className="px-4 py-3 text-left font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               Recomendación
             </th>
             {onDelete && (
-              <th className="text-center px-4 py-3 font-semibold text-gray-700">
+              <th className="px-4 py-3 text-center font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                 Acción
               </th>
             )}
@@ -72,30 +72,30 @@ export function BitacoraTable({
         </thead>
         <tbody>
           {entries.map((entry) => (
-            <tr key={entry.id} className="border-b border-gray-100 hover:bg-gray-50">
-              <td className="px-4 py-3 text-gray-900">
+            <tr key={entry.id} className="border-b border-border/60 transition-colors hover:bg-muted/40">
+              <td className="px-4 py-3 font-mono tabular-nums text-foreground">
                 {new Date(entry.fecha).toLocaleDateString('es-CL')}
               </td>
               <td className="px-4 py-3">
                 <span
-                  className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getRiskColor(
+                  className={`inline-block rounded-full px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wider ${getRiskColor(
                     entry.riesgo
                   )}`}
                 >
                   {entry.riesgo}
                 </span>
               </td>
-              <td className="px-4 py-3 text-gray-700 max-w-xs truncate">
+              <td className="max-w-xs truncate px-4 py-3 text-muted-foreground">
                 {entry.observacion}
               </td>
-              <td className="px-4 py-3 text-gray-700 max-w-xs truncate">
+              <td className="max-w-xs truncate px-4 py-3 text-muted-foreground">
                 {entry.recomendacion}
               </td>
               {onDelete && (
                 <td className="px-4 py-3 text-center">
                   <button
                     onClick={() => onDelete(entry.id)}
-                    className="p-1 text-red-600 hover:bg-red-50 rounded transition inline-block"
+                    className="inline-block rounded p-1.5 text-muted-foreground transition-colors hover:bg-primary/15 hover:text-primary"
                     title="Eliminar"
                   >
                     <Trash2 className="h-4 w-4" />

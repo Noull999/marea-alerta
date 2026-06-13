@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { AlertList } from '@/components/alertas/AlertList'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 export default async function AlertasPage() {
   const session = await auth()
@@ -18,34 +19,35 @@ export default async function AlertasPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Alertas</h1>
-        <p className="text-gray-600 mt-1">Historial de todas las alertas de riesgo de marea roja</p>
-      </div>
+      <PageHeader
+        eyebrow="Alertas"
+        title="Historial de riesgo"
+        description="Todas las alertas de riesgo de marea roja registradas"
+      />
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <div className="grid grid-cols-3 gap-4 mb-6">
-          <div>
-            <p className="text-gray-600 text-sm font-medium">Críticas</p>
-            <p className="text-2xl font-bold text-red-600">
+      <div className="rounded-xl border border-border bg-card p-5 ring-1 ring-foreground/5 sm:p-6">
+        <div className="mb-6 grid grid-cols-3 gap-3 sm:gap-4">
+          <div className="rounded-lg border-l-2 border-red-500 bg-red-500/10 p-3">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Críticas</p>
+            <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-red-400">
               {alertas.filter((a) => a.nivel === 'ROJO').length}
             </p>
           </div>
-          <div>
-            <p className="text-gray-600 text-sm font-medium">Precaución</p>
-            <p className="text-2xl font-bold text-yellow-600">
+          <div className="rounded-lg border-l-2 border-amber-500 bg-amber-500/10 p-3">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Precaución</p>
+            <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-amber-400">
               {alertas.filter((a) => a.nivel === 'AMARILLO').length}
             </p>
           </div>
-          <div>
-            <p className="text-gray-600 text-sm font-medium">Sin Riesgo</p>
-            <p className="text-2xl font-bold text-green-600">
+          <div className="rounded-lg border-l-2 border-emerald-500 bg-emerald-500/10 p-3">
+            <p className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">Sin Riesgo</p>
+            <p className="mt-1 font-heading text-2xl font-bold tabular-nums text-emerald-400">
               {alertas.filter((a) => a.nivel === 'VERDE').length}
             </p>
           </div>
         </div>
 
-        <div className="border-t border-gray-200 pt-6">
+        <div className="border-t border-border pt-6">
           <AlertList
             alertas={alertas.map((a) => ({
               id: a.id,

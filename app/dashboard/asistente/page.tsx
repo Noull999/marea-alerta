@@ -1,14 +1,16 @@
 import { ChatAsistente } from '@/components/chat/ChatAsistente'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 export default function AsistenteePage() {
   return (
-    <div className="space-y-6 h-full flex flex-col">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Asistente IA</h1>
-        <p className="text-gray-600 mt-1">Obtén recomendaciones personalizadas sobre riesgo de marea roja</p>
-      </div>
+    <div className="flex h-full flex-col space-y-6">
+      <PageHeader
+        eyebrow="Asistente IA"
+        title="Consultas de riesgo"
+        description="Recomendaciones personalizadas sobre marea roja"
+      />
 
-      <div className="flex-1 bg-white rounded-lg border border-gray-200 overflow-hidden min-h-[500px]">
+      <div className="min-h-[500px] flex-1 overflow-hidden rounded-xl border border-border bg-card ring-1 ring-foreground/5">
         <ChatAsistente />
       </div>
     </div>

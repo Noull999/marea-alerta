@@ -1,6 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { NotificationToggle } from '@/components/notifications/NotificationToggle'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Check, AlertCircle } from 'lucide-react'
 
 export default function ConfiguracionPage() {
@@ -87,26 +88,24 @@ export default function ConfiguracionPage() {
   if (loading || !session?.user) {
     return (
       <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Configuración</h1>
-          <p className="text-gray-600 mt-1">Cargando...</p>
-        </div>
+        <PageHeader eyebrow="Configuración" title="Preferencias" description="Cargando..." />
       </div>
     )
   }
 
   return (
     <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Configuración</h1>
-        <p className="text-gray-600 mt-1">Administra tus preferencias y notificaciones</p>
-      </div>
+      <PageHeader
+        eyebrow="Configuración"
+        title="Preferencias"
+        description="Administra tus notificaciones y cuenta"
+      />
 
       {message && (
-        <div className={`p-4 rounded-lg flex items-center gap-2 ${
+        <div className={`flex items-center gap-2 rounded-lg p-4 text-sm ${
           messageType === 'success'
-            ? 'bg-green-50 border border-green-200 text-green-700'
-            : 'bg-red-50 border border-red-200 text-red-700'
+            ? 'border border-emerald-500/30 bg-emerald-500/10 text-emerald-300'
+            : 'border border-red-500/30 bg-red-500/10 text-red-300'
         }`}>
           {messageType === 'success' ? (
             <Check className="h-4 w-4" />
@@ -118,103 +117,107 @@ export default function ConfiguracionPage() {
       )}
 
       {/* Notificaciones */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h2 className="mb-6 font-heading text-lg font-semibold text-foreground">
           Notificaciones
         </h2>
         <NotificationToggle />
       </div>
 
       {/* Información de Cuenta */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h2 className="mb-4 font-heading text-lg font-semibold text-foreground">
           Información de Cuenta
         </h2>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
               Correo Electrónico
             </label>
             <input
               type="email"
               value={session.user?.email || ''}
               disabled
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+              className="w-full cursor-not-allowed rounded-lg border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+            <label className="mb-1.5 block text-sm font-medium text-muted-foreground">
               Nombre
             </label>
             <input
               type="text"
               value={session.user?.name || ''}
               disabled
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed"
+              className="w-full cursor-not-allowed rounded-lg border border-input bg-muted/40 px-3 py-2 text-sm text-muted-foreground"
             />
           </div>
         </div>
       </div>
 
       {/* Preferencias de Alertas */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h2 className="font-heading text-lg font-semibold text-foreground">
           Preferencias de Alertas
         </h2>
-        <p className="text-sm text-gray-600 mb-4">
+        <p className="mb-4 mt-1 text-sm text-muted-foreground">
           Selecciona qué niveles de alerta deseas recibir
         </p>
-        <div className="space-y-4">
-          <label className="flex items-center gap-3 cursor-pointer">
+        <div className="space-y-1">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50">
             <input
               type="checkbox"
               checked={alertaRojo}
               onChange={(e) => handlePreferenceChange('rojo', e.target.checked)}
               disabled={saving}
-              className="w-4 h-4 border-gray-300 rounded text-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-4 w-4 rounded border-input accent-red-500 disabled:cursor-not-allowed disabled:opacity-50"
             />
-            <span className="text-gray-700">
-              Alertas de riesgo ROJO (críticas)
+            <span className="h-2 w-2 rounded-full bg-red-500" />
+            <span className="text-sm text-foreground">
+              Alertas de riesgo <span className="font-mono font-semibold text-red-400">ROJO</span> (críticas)
             </span>
           </label>
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50">
             <input
               type="checkbox"
               checked={alertaAmarillo}
               onChange={(e) => handlePreferenceChange('amarillo', e.target.checked)}
               disabled={saving}
-              className="w-4 h-4 border-gray-300 rounded text-yellow-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-4 w-4 rounded border-input accent-amber-500 disabled:cursor-not-allowed disabled:opacity-50"
             />
-            <span className="text-gray-700">
-              Alertas de riesgo AMARILLO (precaución)
+            <span className="h-2 w-2 rounded-full bg-amber-500" />
+            <span className="text-sm text-foreground">
+              Alertas de riesgo <span className="font-mono font-semibold text-amber-400">AMARILLO</span> (precaución)
             </span>
           </label>
-          <label className="flex items-center gap-3 cursor-pointer">
+          <label className="flex cursor-pointer items-center gap-3 rounded-lg px-3 py-2.5 transition-colors hover:bg-muted/50">
             <input
               type="checkbox"
               checked={alertaVerde}
               onChange={(e) => handlePreferenceChange('verde', e.target.checked)}
               disabled={saving}
-              className="w-4 h-4 border-gray-300 rounded text-green-600 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="h-4 w-4 rounded border-input accent-emerald-500 disabled:cursor-not-allowed disabled:opacity-50"
             />
-            <span className="text-gray-700">
-              Alertas de riesgo VERDE (sin riesgo)
+            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+            <span className="text-sm text-foreground">
+              Alertas de riesgo <span className="font-mono font-semibold text-emerald-400">VERDE</span> (sin riesgo)
             </span>
           </label>
         </div>
       </div>
 
       {/* Información de la App */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h2 className="mb-4 font-heading text-lg font-semibold text-foreground">
           Acerca de MareaAlerta
         </h2>
-        <div className="space-y-2 text-sm text-gray-600">
+        <div className="space-y-2 text-sm text-muted-foreground">
           <p>
-            <strong>Versión:</strong> 1.0.1
+            <strong className="font-medium text-foreground">Versión:</strong> 1.0.1
           </p>
           <p>
-            <strong>Última actualización:</strong> {new Date().toLocaleDateString('es-CL')}
+            <strong className="font-medium text-foreground">Última actualización:</strong>{' '}
+            {new Date().toLocaleDateString('es-CL')}
           </p>
           <p className="pt-2">
             MareaAlerta es una aplicación web para monitoreo de riesgo de marea roja

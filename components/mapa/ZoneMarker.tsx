@@ -44,21 +44,21 @@ export function ZoneMarker({ zona, esCentroPropio }: Props) {
     <Marker position={[zona.lat, zona.lon]} icon={createColorIcon(color)}>
       <Popup>
         <div className="text-sm">
-          <strong>{zona.nombre}</strong>
+          <strong className="text-foreground">{zona.nombre}</strong>
           {!esCentroPropio && (
             <div className="mt-1">
               <span
                 className={`font-bold ${
                   zona.nivel === 'ROJO'
-                    ? 'text-red-600'
+                    ? 'text-red-400'
                     : zona.nivel === 'AMARILLO'
-                    ? 'text-yellow-600'
-                    : 'text-green-600'
+                    ? 'text-amber-400'
+                    : 'text-emerald-400'
                 }`}
               >
                 Riesgo: {zona.nivel}
               </span>
-              <p className="text-xs mt-1 text-gray-700">{zona.recomendacion}</p>
+              <p className="mt-1 text-xs text-muted-foreground">{zona.recomendacion}</p>
             </div>
           )}
         </div>

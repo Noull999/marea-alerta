@@ -55,55 +55,82 @@ export default async function DashboardPage() {
     console.error('Error loading dashboard data:', error)
   }
 
+  const alertasRojas = alertas.filter((a) => a.nivel === 'ROJO').length
+  const alertasAmarillas = alertas.filter((a) => a.nivel === 'AMARILLO').length
+
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Panel de Control</h1>
-        <p className="text-gray-600 mt-1">Monitoreo de riesgo de marea roja en tiempo real</p>
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-primary">
+            Panel de Control
+          </p>
+          <h1 className="mt-1 font-heading text-3xl font-bold tracking-tight text-foreground">
+            Riesgo de marea roja
+          </h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Monitoreo de FAN en tiempo real · Los Lagos, Chile
+          </p>
+        </div>
+        <div className="flex items-center gap-2 rounded-full border border-border bg-card px-3 py-1.5">
+          <span className="relative flex h-2 w-2">
+            <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
+            <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+          </span>
+          <span className="font-mono text-[11px] uppercase tracking-wider text-muted-foreground">
+            En vivo
+          </span>
+        </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
         {/* Stats */}
-        <div className="lg:col-span-1 space-y-4">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-gray-600 text-sm font-medium">Tus Centros</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">
-              {centrosUsuario.length}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-gray-600 text-sm font-medium">Alertas Activas</p>
-            <p className="text-3xl font-bold text-red-600 mt-2">
-              {alertas.filter((a) => a.nivel === 'ROJO').length}
-            </p>
-          </div>
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <p className="text-gray-600 text-sm font-medium">En Precaución</p>
-            <p className="text-3xl font-bold text-yellow-600 mt-2">
-              {alertas.filter((a) => a.nivel === 'AMARILLO').length}
-            </p>
-          </div>
+        <div className="grid grid-cols-3 gap-3 lg:col-span-1 lg:grid-cols-1 lg:gap-4">
+          <StatCard
+            label="Tus Centros"
+            value={centrosUsuario.length}
+            tone="neutral"
+          />
+          <StatCard
+            label="Alertas Activas"
+            value={alertasRojas}
+            tone="danger"
+          />
+          <StatCard
+            label="En Precaución"
+            value={alertasAmarillas}
+            tone="warning"
+          />
         </div>
 
         {/* Map */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-lg border border-gray-200 p-6">
-            <h2 className="text-lg font-semibold text-gray-900 mb-4">Mapa de Riesgo</h2>
-            {zonas?.zonas ? (
-              <RiskMap
-                zonas={Array.isArray(zonas.zonas) ? zonas.zonas : []}
-                centrosUsuario={centrosUsuario.map((c) => ({
-                  id: c.id,
-                  nombre: c.nombre,
-                  latitud: c.latitud,
-                  longitud: c.longitud,
-                }))}
-              />
-            ) : (
-              <div className="h-96 md:h-[500px] bg-gray-100 rounded-lg flex items-center justify-center">
-                <p className="text-gray-500">Cargando datos de zonas...</p>
-              </div>
-            )}
+          <div className="overflow-hidden rounded-xl border border-border bg-card ring-1 ring-foreground/5">
+            <div className="flex items-center justify-between border-b border-border px-5 py-3.5">
+              <h2 className="font-heading text-sm font-semibold text-foreground">
+                Mapa de Riesgo
+              </h2>
+              <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+                {Array.isArray(zonas?.zonas) ? zonas.zonas.length : 0} zonas
+              </span>
+            </div>
+            <div className="p-3 sm:p-4">
+              {zonas?.zonas ? (
+                <RiskMap
+                  zonas={Array.isArray(zonas.zonas) ? zonas.zonas : []}
+                  centrosUsuario={centrosUsuario.map((c) => ({
+                    id: c.id,
+                    nombre: c.nombre,
+                    latitud: c.latitud,
+                    longitud: c.longitud,
+                  }))}
+                />
+              ) : (
+                <div className="flex h-96 items-center justify-center rounded-lg bg-muted/40 md:h-[500px]">
+                  <p className="text-sm text-muted-foreground">Cargando datos de zonas...</p>
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>
@@ -111,9 +138,10 @@ export default async function DashboardPage() {
       {/* Datos Oceanográficos Detallados */}
       {centrosUsuario.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Datos Oceanográficos - {centrosUsuario[0].nombre}
-          </h2>
+          <SectionHeading
+            title="Datos Oceanográficos"
+            meta={centrosUsuario[0].nombre}
+          />
           <OceanographicDataPanel
             lat={centrosUsuario[0].latitud}
             lon={centrosUsuario[0].longitud}
@@ -125,9 +153,7 @@ export default async function DashboardPage() {
       {/* Recomendaciones para tus Centros */}
       {centrosUsuario.length > 0 && (
         <div>
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            Recomendaciones para tus Centros
-          </h2>
+          <SectionHeading title="Recomendaciones para tus Centros" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {centrosUsuario.map((centro) => {
               const zonaData = (zonas?.zonas || []).find(
@@ -154,18 +180,63 @@ export default async function DashboardPage() {
       )}
 
       {/* Recent Alerts */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-4">Alertas Recientes</h2>
-        <AlertList
-          alertas={alertas.map((a) => ({
-            id: a.id,
-            zona: a.zona,
-            nivel: a.nivel as any,
-            descripcion: a.mensaje,
-            createdAt: a.createdAt.toISOString(),
-          }))}
-        />
+      <div>
+        <SectionHeading title="Alertas Recientes" />
+        <div className="rounded-xl border border-border bg-card p-4 ring-1 ring-foreground/5 sm:p-6">
+          <AlertList
+            alertas={alertas.map((a) => ({
+              id: a.id,
+              zona: a.zona,
+              nivel: a.nivel as any,
+              descripcion: a.mensaje,
+              createdAt: a.createdAt.toISOString(),
+            }))}
+          />
+        </div>
       </div>
+    </div>
+  )
+}
+
+const TONE_STYLES = {
+  neutral: { value: 'text-foreground', bar: 'bg-muted-foreground/40' },
+  danger: { value: 'text-primary', bar: 'bg-primary' },
+  warning: { value: 'text-amber-400', bar: 'bg-amber-400' },
+} as const
+
+function StatCard({
+  label,
+  value,
+  tone,
+}: {
+  label: string
+  value: number
+  tone: keyof typeof TONE_STYLES
+}) {
+  const styles = TONE_STYLES[tone]
+  return (
+    <div className="group relative overflow-hidden rounded-xl border border-border bg-card p-4 ring-1 ring-foreground/5 transition-colors hover:border-foreground/15 lg:p-5">
+      <span className={`absolute left-0 top-0 h-full w-[3px] ${styles.bar}`} />
+      <p className="font-mono text-[10px] uppercase tracking-[0.15em] text-muted-foreground lg:text-xs">
+        {label}
+      </p>
+      <p className={`mt-2 font-heading text-3xl font-bold tabular-nums lg:text-4xl ${styles.value}`}>
+        {value}
+      </p>
+    </div>
+  )
+}
+
+function SectionHeading({ title, meta }: { title: string; meta?: string }) {
+  return (
+    <div className="mb-4 flex items-center gap-3">
+      <span className="h-4 w-1 rounded-full bg-primary" />
+      <h2 className="font-heading text-lg font-semibold text-foreground">{title}</h2>
+      {meta && (
+        <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+          · {meta}
+        </span>
+      )}
     </div>
   )
 }

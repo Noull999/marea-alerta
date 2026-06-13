@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { auth } from '@/lib/auth'
 import { db } from '@/lib/db'
 import { OceanographicDataPanel } from '@/components/oceanograficos/OceanographicDataPanel'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 
 // Zonas predefinidas de Chiloé para análisis
 const ZONAS_PREDEFINIDAS = [
@@ -34,20 +35,20 @@ export default async function OceanograficoPage() {
 
   return (
     <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold text-gray-900">Análisis Oceanográfico</h1>
-        <p className="text-gray-600 mt-1">
-          Datos integrados de múltiples fuentes: Copernicus, NOAA HAB, IFOP y SHOA
-        </p>
-      </div>
+      <PageHeader
+        eyebrow="Análisis Oceanográfico"
+        title="Datos integrados del mar"
+        description="Fuentes combinadas: Copernicus, NOAA HAB, IFOP y SHOA"
+      />
 
       <div className="grid grid-cols-1 gap-6">
         {zonasAMostrar.map((zona) => (
           <div key={`${zona.lat}-${zona.lon}`}>
-            <div className="mb-3">
-              <h2 className="text-xl font-semibold text-gray-900">{zona.nombre}</h2>
-              <p className="text-sm text-gray-500">
-                Coordenadas: {zona.lat.toFixed(2)}°, {zona.lon.toFixed(2)}°
+            <div className="mb-3 flex items-center gap-3">
+              <span className="h-4 w-1 rounded-full bg-primary" />
+              <h2 className="font-heading text-xl font-semibold text-foreground">{zona.nombre}</h2>
+              <p className="font-mono text-xs tabular-nums text-muted-foreground">
+                {zona.lat.toFixed(2)}°, {zona.lon.toFixed(2)}°
               </p>
             </div>
             <OceanographicDataPanel
@@ -60,49 +61,49 @@ export default async function OceanograficoPage() {
       </div>
 
       {/* Information Footer */}
-      <div className="bg-blue-50 rounded-lg border border-blue-200 p-6 mt-8">
-        <h3 className="font-semibold text-blue-900 mb-2">Fuentes de Datos</h3>
-        <ul className="text-sm text-blue-800 space-y-1">
+      <div className="mt-8 rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h3 className="mb-3 font-heading font-semibold text-foreground">Fuentes de Datos</h3>
+        <ul className="space-y-2 text-sm text-muted-foreground">
           <li>
-            <span className="font-medium">Copernicus Marine:</span> Temperatura superficial del mar (TSM),
+            <span className="font-medium text-foreground">Copernicus Marine:</span> Temperatura superficial del mar (TSM),
             anomalías de temperatura y concentración de clorofila-a
           </li>
           <li>
-            <span className="font-medium">NOAA HAB:</span> Pronósticos de mareas rojas y probabilidad
+            <span className="font-medium text-foreground">NOAA HAB:</span> Pronósticos de mareas rojas y probabilidad
             de floraciones de algas nocivas
           </li>
           <li>
-            <span className="font-medium">IFOP:</span> Monitoreo de mareas rojas con niveles de
+            <span className="font-medium text-foreground">IFOP:</span> Monitoreo de mareas rojas con niveles de
             toxicidad y alertas sanitarias de Chile
           </li>
           <li>
-            <span className="font-medium">SHOA:</span> Predicciones de mareas, estado del mar y
+            <span className="font-medium text-foreground">SHOA:</span> Predicciones de mareas, estado del mar y
             recomendaciones de navegación
           </li>
         </ul>
       </div>
 
       {/* Risk Level Guide */}
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
-        <h3 className="font-semibold text-gray-900 mb-4">Guía de Niveles de Riesgo</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-            <p className="font-semibold text-green-900">VERDE - Riesgo Bajo</p>
-            <p className="text-sm text-green-700 mt-2">
+      <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+        <h3 className="mb-4 font-heading font-semibold text-foreground">Guía de Niveles de Riesgo</h3>
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+          <div className="rounded-lg border-l-2 border-emerald-500 bg-emerald-500/10 p-4">
+            <p className="font-mono text-xs font-semibold uppercase tracking-wider text-emerald-300">VERDE · Riesgo Bajo</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Condiciones oceanográficas normales. Continúe con operaciones habituales y monitoreo
               rutinario.
             </p>
           </div>
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <p className="font-semibold text-yellow-900">AMARILLO - Riesgo Moderado</p>
-            <p className="text-sm text-yellow-700 mt-2">
+          <div className="rounded-lg border-l-2 border-amber-500 bg-amber-500/10 p-4">
+            <p className="font-mono text-xs font-semibold uppercase tracking-wider text-amber-300">AMARILLO · Riesgo Moderado</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Se detectan factores de riesgo moderados. Monitoree continuamente y esté preparado
               para acciones defensivas.
             </p>
           </div>
-          <div className="bg-red-50 border border-red-200 rounded-lg p-4">
-            <p className="font-semibold text-red-900">ROJO - Riesgo Alto</p>
-            <p className="text-sm text-red-700 mt-2">
+          <div className="rounded-lg border-l-2 border-red-500 bg-red-500/10 p-4">
+            <p className="font-mono text-xs font-semibold uppercase tracking-wider text-red-300">ROJO · Riesgo Alto</p>
+            <p className="mt-2 text-sm text-muted-foreground">
               Múltiples factores de riesgo detectados. Considere cosecha inmediata o solicite
               confirmación oficial.
             </p>

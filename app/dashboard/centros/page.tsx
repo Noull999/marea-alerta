@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { CentroForm } from '@/components/centros/CentroForm'
 import { CentroCard } from '@/components/centros/CentroCard'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Plus, X } from 'lucide-react'
 
 interface Centro {
@@ -83,36 +84,37 @@ export default function CentrosPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Mis Centros</h1>
-          <p className="text-gray-600 mt-1">Gestiona tus centros de cultivo</p>
-        </div>
-        {!showForm && (
-          <button
-            onClick={() => {
-              setEditingCentro(null)
-              setShowForm(true)
-              setError('')
-            }}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Nuevo Centro</span>
-          </button>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Mis Centros"
+        title="Centros de cultivo"
+        description="Gestiona tus centros de cultivo de moluscos"
+        action={
+          !showForm ? (
+            <button
+              onClick={() => {
+                setEditingCentro(null)
+                setShowForm(true)
+                setError('')
+              }}
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_0_22px_-6px_oklch(0.6_0.235_25_/_0.8)] transition-colors hover:bg-primary/85"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Nuevo Centro</span>
+            </button>
+          ) : undefined
+        }
+      />
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm text-foreground/90">
           {error}
         </div>
       )}
 
       {showForm && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">
+        <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold text-foreground">
               {editingCentro ? 'Editar Centro' : 'Nuevo Centro'}
             </h2>
             <button
@@ -120,7 +122,7 @@ export default function CentrosPage() {
                 setShowForm(false)
                 setEditingCentro(null)
               }}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -137,20 +139,20 @@ export default function CentrosPage() {
       )}
 
       {loading ? (
-        <div className="space-y-2 animate-pulse">
-          {[...Array(3)].map((_, i) => (
-            <div key={i} className="h-16 bg-gray-200 rounded-lg" />
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          {[...Array(4)].map((_, i) => (
+            <div key={i} className="h-20 animate-pulse rounded-xl bg-muted" />
           ))}
         </div>
       ) : centros.length === 0 ? (
-        <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
-          <p className="text-gray-500">No tienes centros registrados</p>
+        <div className="rounded-xl border border-dashed border-border bg-card/50 py-14 text-center">
+          <p className="text-sm text-muted-foreground">No tienes centros registrados</p>
           <button
             onClick={() => {
               setEditingCentro(null)
               setShowForm(true)
             }}
-            className="mt-4 text-blue-600 hover:text-blue-700 font-medium"
+            className="mt-4 font-medium text-primary transition-colors hover:text-primary/80"
           >
             Crear tu primer centro
           </button>

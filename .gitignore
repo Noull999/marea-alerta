@@ -43,3 +43,8 @@ yarn-error.log*
 next-env.d.ts
 
 .vercel
+
+# Stray local artifacts
+cookies.txt
+*.log
+dev-test.log

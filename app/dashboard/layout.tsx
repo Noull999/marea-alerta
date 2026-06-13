@@ -1,10 +1,9 @@
 import { ReactNode } from 'react'
-import Link from 'next/link'
-import { Route } from 'next'
 import { auth } from '@/lib/auth'
 import { signOut } from '@/lib/auth'
 import { redirect } from 'next/navigation'
-import { MapPin, AlertTriangle, BookOpen, MessageSquare, LogOut, Settings, Waves } from 'lucide-react'
+import { LogOut, Waves } from 'lucide-react'
+import { DashboardNav } from '@/components/dashboard/DashboardNav'
 
 async function DashboardLayout({ children }: { children: ReactNode }) {
   const session = await auth()
@@ -13,15 +12,22 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="grain relative flex min-h-screen flex-col bg-background">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <AlertTriangle className="h-5 w-5 text-white" />
+      <header className="sticky top-0 z-50 border-b border-border bg-background/80 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-3">
+            <div className="relative flex h-9 w-9 items-center justify-center rounded-lg bg-primary shadow-[0_0_22px_-4px_oklch(0.6_0.235_25_/_0.7)]">
+              <Waves className="h-5 w-5 text-primary-foreground" />
             </div>
-            <h1 className="text-xl font-bold text-gray-900">MareaAlerta</h1>
+            <div className="leading-none">
+              <h1 className="font-heading text-lg font-bold tracking-tight text-foreground">
+                Marea<span className="text-primary">Alerta</span>
+              </h1>
+              <p className="mt-0.5 font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
+                Consola de Monitoreo · FAN
+              </p>
+            </div>
           </div>
           <form
             action={async () => {
@@ -31,76 +37,28 @@ async function DashboardLayout({ children }: { children: ReactNode }) {
           >
             <button
               type="submit"
-              className="flex items-center gap-2 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
+              className="flex items-center gap-2 rounded-lg border border-border px-3 py-2 text-sm text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
             >
               <LogOut className="h-4 w-4" />
-              <span className="text-sm hidden sm:inline">Salir</span>
+              <span className="hidden sm:inline">Salir</span>
             </button>
           </form>
         </div>
+        {/* Red signal line — the memorable anchor under the header */}
+        <div className="signal-line h-px w-full opacity-70" />
       </header>
 
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
-        <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 lg:gap-8">
+      <div className="mx-auto w-full max-w-7xl flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-8">
           {/* Sidebar */}
-          <nav className="lg:col-span-1">
-            <div className="sticky top-24 space-y-1">
-              <Link
-                href={"/dashboard" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <MapPin className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Inicio</span>
-              </Link>
-              <Link
-                href={"/dashboard/alertas" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <AlertTriangle className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Alertas</span>
-              </Link>
-              <Link
-                href={"/dashboard/centros" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <MapPin className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Mis Centros</span>
-              </Link>
-              <Link
-                href={"/dashboard/oceanografico" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <Waves className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Oceanografía</span>
-              </Link>
-              <Link
-                href={"/dashboard/bitacora" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <BookOpen className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Bitácora</span>
-              </Link>
-              <Link
-                href={"/dashboard/asistente" as Route}
-                className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-              >
-                <MessageSquare className="h-5 w-5 flex-shrink-0" />
-                <span className="text-sm font-medium hidden sm:inline">Asistente</span>
-              </Link>
-              <div className="border-t border-gray-200 my-2 pt-2">
-                <Link
-                  href={"/dashboard/configuracion" as Route}
-                  className="flex items-center gap-3 px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition active:bg-gray-200"
-                >
-                  <Settings className="h-5 w-5 flex-shrink-0" />
-                  <span className="text-sm font-medium hidden sm:inline">Configuración</span>
-                </Link>
-              </div>
+          <aside className="lg:col-span-1">
+            <div className="sticky top-24">
+              <DashboardNav />
             </div>
-          </nav>
+          </aside>
 
           {/* Main Content */}
-          <main className="lg:col-span-4">{children}</main>
+          <main className="lg:col-span-4 min-w-0">{children}</main>
         </div>
       </div>
     </div>

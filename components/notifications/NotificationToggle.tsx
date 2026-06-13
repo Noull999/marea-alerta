@@ -69,8 +69,8 @@ export function NotificationToggle() {
 
   if (!supported) {
     return (
-      <div className="p-4 bg-gray-100 rounded-lg border border-gray-300">
-        <p className="text-sm text-gray-600">
+      <div className="rounded-lg border border-border bg-muted/40 p-4">
+        <p className="text-sm text-muted-foreground">
           Las notificaciones push no están soportadas en este navegador
         </p>
       </div>
@@ -79,16 +79,16 @@ export function NotificationToggle() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg border border-gray-200">
+      <div className="flex items-center justify-between rounded-lg border border-border bg-muted/30 p-4">
         <div className="flex items-center gap-3">
           {isEnabled ? (
-            <Bell className="h-5 w-5 text-blue-600" />
+            <Bell className="h-5 w-5 text-primary" />
           ) : (
-            <BellOff className="h-5 w-5 text-gray-400" />
+            <BellOff className="h-5 w-5 text-muted-foreground" />
           )}
           <div>
-            <p className="font-medium text-gray-900">Notificaciones Push</p>
-            <p className="text-sm text-gray-600">
+            <p className="font-medium text-foreground">Notificaciones Push</p>
+            <p className="text-sm text-muted-foreground">
               {isEnabled
                 ? 'Recibirás alertas en tiempo real'
                 : 'Habilita para recibir alertas'}
@@ -98,10 +98,10 @@ export function NotificationToggle() {
         <button
           onClick={handleToggle}
           disabled={loading}
-          className={`px-4 py-2 rounded-lg font-medium transition flex items-center gap-2 ${
+          className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
             isEnabled
-              ? 'bg-blue-600 text-white hover:bg-blue-700 disabled:bg-gray-400'
-              : 'bg-gray-200 text-gray-700 hover:bg-gray-300 disabled:bg-gray-300'
+              ? 'bg-primary text-primary-foreground hover:bg-primary/85'
+              : 'border border-border bg-secondary text-secondary-foreground hover:bg-muted'
           }`}
         >
           {loading && <Loader2 className="h-4 w-4 animate-spin" />}
@@ -110,12 +110,12 @@ export function NotificationToggle() {
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg">
+        <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-sm text-red-300">
           {error}
         </div>
       )}
 
-      <p className="text-xs text-gray-500">
+      <p className="text-xs text-muted-foreground">
         {isEnabled
           ? 'Las notificaciones están habilitadas. Recibirás alertas sobre cambios de nivel de riesgo en zonas monitoreadas.'
           : 'Habilita las notificaciones para recibir alertas inmediatas cuando cambien los niveles de riesgo.'}

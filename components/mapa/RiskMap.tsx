@@ -5,7 +5,7 @@ import 'leaflet/dist/leaflet.css'
 
 const MapContainer = dynamic(
   () => import('react-leaflet').then((m) => m.MapContainer),
-  { ssr: false, loading: () => <div className="w-full h-96 md:h-[500px] bg-gray-200 rounded-lg animate-pulse flex items-center justify-center"><p className="text-gray-500">Cargando mapa...</p></div> }
+  { ssr: false, loading: () => <div className="flex h-96 w-full animate-pulse items-center justify-center rounded-lg bg-muted md:h-[500px]"><p className="text-sm text-muted-foreground">Cargando mapa...</p></div> }
 )
 const TileLayer = dynamic(
   () => import('react-leaflet').then((m) => m.TileLayer),
@@ -43,18 +43,18 @@ export function RiskMap({ zonas, centrosUsuario }: RiskMapProps) {
   }, [])
 
   if (!mounted) {
-    return <div className="w-full h-96 md:h-[500px] bg-gray-200 rounded-lg animate-pulse flex items-center justify-center"><p className="text-gray-500">Cargando mapa...</p></div>
+    return <div className="flex h-96 w-full animate-pulse items-center justify-center rounded-lg bg-muted md:h-[500px]"><p className="text-sm text-muted-foreground">Cargando mapa...</p></div>
   }
 
   return (
     <div className="w-full">
-      <div className="relative rounded-lg overflow-hidden border border-gray-200 bg-gray-50" style={{ height: '500px' }}>
+      <div className="relative overflow-hidden rounded-lg border border-border bg-muted/40" style={{ height: '500px' }}>
         {zonas.length === 0 && centrosUsuario.length === 0 ? (
-          <div className="w-full h-full bg-gray-100 flex items-center justify-center">
-            <p className="text-gray-500 text-center">
-              <p className="font-medium">Sin datos para mostrar</p>
+          <div className="flex h-full w-full items-center justify-center bg-muted/40">
+            <div className="text-center text-muted-foreground">
+              <p className="font-medium text-foreground">Sin datos para mostrar</p>
               <p className="text-sm">Cargando información de zonas...</p>
-            </p>
+            </div>
           </div>
         ) : (
           <div className="relative w-full h-full">

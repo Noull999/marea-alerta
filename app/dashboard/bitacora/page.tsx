@@ -2,6 +2,7 @@
 import { useState, useEffect } from 'react'
 import { BitacoraForm } from '@/components/bitacora/BitacoraForm'
 import { BitacoraTable } from '@/components/bitacora/BitacoraTable'
+import { PageHeader } from '@/components/dashboard/PageHeader'
 import { Plus, X } from 'lucide-react'
 
 interface BitacoraEntry {
@@ -73,38 +74,39 @@ export default function BitacoraPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-gray-900">Bitácora</h1>
-          <p className="text-gray-600 mt-1">Registro de observaciones y seguimiento</p>
-        </div>
-        {!showForm && (
-          <button
-            onClick={() => {
-              setShowForm(true)
-              setError('')
-            }}
-            className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
-          >
-            <Plus className="h-4 w-4" />
-            <span>Nuevo Registro</span>
-          </button>
-        )}
-      </div>
+      <PageHeader
+        eyebrow="Bitácora"
+        title="Registro de observaciones"
+        description="Seguimiento de observaciones de campo"
+        action={
+          !showForm ? (
+            <button
+              onClick={() => {
+                setShowForm(true)
+                setError('')
+              }}
+              className="flex items-center gap-2 rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow-[0_0_22px_-6px_oklch(0.6_0.235_25_/_0.8)] transition-colors hover:bg-primary/85"
+            >
+              <Plus className="h-4 w-4" />
+              <span>Nuevo Registro</span>
+            </button>
+          ) : undefined
+        }
+      />
 
       {error && (
-        <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+        <div className="rounded-lg border border-primary/30 bg-primary/10 p-4 text-sm text-foreground/90">
           {error}
         </div>
       )}
 
       {showForm && (
-        <div className="bg-white rounded-lg border border-gray-200 p-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-900">Nuevo Registro</h2>
+        <div className="rounded-xl border border-border bg-card p-6 ring-1 ring-foreground/5">
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="font-heading text-lg font-semibold text-foreground">Nuevo Registro</h2>
             <button
               onClick={() => setShowForm(false)}
-              className="text-gray-400 hover:text-gray-600"
+              className="text-muted-foreground transition-colors hover:text-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -116,7 +118,7 @@ export default function BitacoraPage() {
         </div>
       )}
 
-      <div className="bg-white rounded-lg border border-gray-200 p-6">
+      <div className="rounded-xl border border-border bg-card p-5 ring-1 ring-foreground/5 sm:p-6">
         <BitacoraTable
           entries={entries}
           onDelete={handleDelete}

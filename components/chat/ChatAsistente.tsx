@@ -117,9 +117,9 @@ export function ChatAsistente() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full bg-white rounded-lg overflow-hidden">
+    <div className="flex h-full w-full flex-col overflow-hidden bg-card">
       {/* Messages Area */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
+      <div className="flex-1 space-y-4 overflow-y-auto bg-background/40 p-4">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -128,13 +128,13 @@ export function ChatAsistente() {
             }`}
           >
             <div
-              className={`max-w-xs md:max-w-md lg:max-w-lg px-4 py-3 rounded-lg break-words ${
+              className={`max-w-xs break-words rounded-2xl px-4 py-3 md:max-w-md lg:max-w-lg ${
                 message.role === 'user'
-                  ? 'bg-blue-600 text-white rounded-br-none shadow-sm'
-                  : 'bg-white text-gray-900 rounded-bl-none shadow-sm border border-gray-200'
+                  ? 'rounded-br-sm bg-primary text-primary-foreground'
+                  : 'rounded-bl-sm border border-border bg-card text-foreground'
               }`}
             >
-              <p className="text-sm leading-relaxed whitespace-pre-wrap">
+              <p className="whitespace-pre-wrap text-sm leading-relaxed">
                 {message.content}
               </p>
             </div>
@@ -143,8 +143,10 @@ export function ChatAsistente() {
 
         {/* Quick Prompts */}
         {messages.length === 1 && !loading && (
-          <div className="space-y-2 mt-6">
-            <p className="text-xs text-gray-500 font-medium px-2">Preguntas frecuentes:</p>
+          <div className="mt-6 space-y-2">
+            <p className="px-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
+              Preguntas frecuentes
+            </p>
             <div className="grid grid-cols-1 gap-2">
               {QUICK_PROMPTS.map((prompt) => (
                 <button
@@ -156,7 +158,7 @@ export function ChatAsistente() {
                       form?.dispatchEvent(new Event('submit', { bubbles: true }))
                     }, 100)
                   }}
-                  className="text-left text-xs px-3 py-2 bg-blue-50 hover:bg-blue-100 text-blue-700 rounded border border-blue-200 transition active:bg-blue-200"
+                  className="rounded-lg border border-border bg-muted/40 px-3 py-2 text-left text-xs text-muted-foreground transition-colors hover:border-primary/40 hover:bg-muted hover:text-foreground"
                 >
                   {prompt}
                 </button>
@@ -168,8 +170,8 @@ export function ChatAsistente() {
         {/* Loading Indicator */}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white text-gray-900 px-4 py-3 rounded-lg rounded-bl-none shadow-sm border border-gray-200">
-              <Loader2 className="h-4 w-4 animate-spin text-blue-600" />
+            <div className="rounded-2xl rounded-bl-sm border border-border bg-card px-4 py-3 text-foreground">
+              <Loader2 className="h-4 w-4 animate-spin text-primary" />
             </div>
           </div>
         )}
@@ -177,7 +179,7 @@ export function ChatAsistente() {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-gray-200 bg-white p-4">
+      <div className="border-t border-border bg-card p-4">
         <form onSubmit={handleSubmit} className="flex gap-2">
           <input
             type="text"
@@ -185,12 +187,12 @@ export function ChatAsistente() {
             onChange={(e) => setInput(e.target.value)}
             placeholder="Escribe tu pregunta..."
             disabled={loading}
-            className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed"
+            className="flex-1 rounded-lg border border-input bg-background px-4 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary/50 focus:outline-none focus:ring-2 focus:ring-ring/40 disabled:cursor-not-allowed disabled:opacity-50"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="bg-blue-600 hover:bg-blue-700 text-white p-2 rounded-lg disabled:bg-gray-300 disabled:cursor-not-allowed transition flex items-center justify-center min-w-[40px]"
+            className="flex min-w-[40px] items-center justify-center rounded-lg bg-primary p-2 text-primary-foreground transition-colors hover:bg-primary/85 disabled:cursor-not-allowed disabled:opacity-40"
             title="Enviar"
           >
             <Send className="h-4 w-4" />
