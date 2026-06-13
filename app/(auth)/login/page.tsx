@@ -1,9 +1,21 @@
+import Link from 'next/link'
 import { signIn } from '@/lib/auth'
 import { Button } from '@/components/ui/button'
-import { Waves } from 'lucide-react'
+import { Waves, AlertTriangle } from 'lucide-react'
 
-export default function LoginPage() {
-  const googleConfigured = Boolean(process.env.GOOGLE_ID && process.env.GOOGLE_SECRET)
+// Google se considera configurado con cualquiera de los dos esquemas de nombres
+// (next-auth v5 usa AUTH_GOOGLE_*; el proyecto también soporta GOOGLE_*).
+const googleConfigured = Boolean(
+  (process.env.GOOGLE_ID && process.env.GOOGLE_SECRET) ||
+    (process.env.AUTH_GOOGLE_ID && process.env.AUTH_GOOGLE_SECRET)
+)
+
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ error?: string }>
+}) {
+  const { error } = await searchParams
 
   const handleGoogleSignIn = async () => {
     'use server'
@@ -45,40 +57,47 @@ export default function LoginPage() {
             Inicia sesión para ver el riesgo de marea roja en tus centros.
           </p>
 
+          {error && (
+            <div className="mb-4 flex items-start gap-2 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-xs text-red-300">
+              <AlertTriangle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+              <p>
+                No se pudo iniciar sesión con ese método. Prueba el acceso en modo Demo.
+              </p>
+            </div>
+          )}
+
           <div className="space-y-3">
+            {/* Google: para usuarios autorizados */}
+            {googleConfigured && (
+              <form action={handleGoogleSignIn}>
+                <Button type="submit" size="lg" className="h-11 w-full text-sm">
+                  Continuar con Google
+                </Button>
+              </form>
+            )}
+
             {/* Demo: acceso fiable, siempre disponible */}
             <form action={handleDemoSignIn}>
-              <Button type="submit" size="lg" className="h-11 w-full text-sm">
+              <Button
+                type="submit"
+                size="lg"
+                variant={googleConfigured ? 'outline' : 'default'}
+                className="h-11 w-full text-sm"
+              >
                 Ingresar en modo Demo
               </Button>
             </form>
-
-            {/* Google: opción secundaria, solo si está configurado */}
-            {googleConfigured && (
-              <>
-                <div className="flex items-center gap-3 py-1">
-                  <span className="h-px flex-1 bg-border" />
-                  <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground/70">
-                    o
-                  </span>
-                  <span className="h-px flex-1 bg-border" />
-                </div>
-                <form action={handleGoogleSignIn}>
-                  <Button
-                    type="submit"
-                    size="lg"
-                    variant="outline"
-                    className="h-11 w-full text-sm"
-                  >
-                    Continuar con Google
-                  </Button>
-                </form>
-              </>
-            )}
           </div>
         </div>
 
-        <p className="mt-6 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/60">
+        <Link
+          href="/inicio"
+          className="mt-6 block text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/60 transition-colors hover:text-primary"
+        >
+          ¿Qué es MareaAlerta? →
+        </Link>
+
+        <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.18em] text-muted-foreground/40">
           Los Lagos · Chile
         </p>
       </div>
