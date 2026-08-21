@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { Geist, Geist_Mono, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import { ServiceWorkerInit } from "@/components/app/ServiceWorkerInit";
@@ -66,6 +67,12 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <ServiceWorkerInit />
         {children}
+        <Script
+          defer
+          src="https://admingloubal.vercel.app/track.js"
+          data-app="glb_9086a73a407c"
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
