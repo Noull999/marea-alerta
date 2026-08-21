@@ -98,6 +98,7 @@ export function NotificationToggle() {
         <button
           onClick={handleToggle}
           disabled={loading}
+          data-track={isEnabled ? "desactivar-notificaciones" : "activar-notificaciones"}
           className={`flex items-center gap-2 rounded-lg px-4 py-2 text-sm font-medium transition-colors disabled:opacity-50 ${
             isEnabled
               ? 'bg-primary text-primary-foreground hover:bg-primary/85'
